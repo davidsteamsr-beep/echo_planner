@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <title>ECHO Planner</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050505;
+      --card: #121212;
+      --card-hi: #171717;
+      --fg: #f4f4f4;
+      --muted: #8a8a8a;
+      --faint: #5c5c5c;
+      --accent: #ff6a1a;
+      --ink: #141414;
+      --metal: #cfcfcf;
+      --radius: 24px;
+      --radius-tile: 18px;
+      --font: "Manrope", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      background: #000; color: var(--fg);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      overscroll-behavior: none;
+    }
+    button { font-family: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
+    input, textarea { font-family: inherit; color: var(--fg); background: transparent; border: 0; outline: none; }
+    .stage { min-height: 100dvh; display: grid; place-items: center; background: #000; }
+    .phone {
+      width: min(390px, 100%); height: 100dvh; max-height: 100dvh;
+      background: var(--bg); position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    @media (min-width: 520px) {
+      .phone {
+        width: 390px; height: min(844px, calc(100dvh - 32px)); max-height: 844px;
+        border-radius: 44px;
+        box-shadow: 0 0 0 2px #2a2a2c, 0 0 0 6px #0a0a0a, 0 30px 80px rgba(0,0,0,.65);
+      }
+    }
+    .scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 18px 18px 8px; scrollbar-width: none; }
+    .scroll::-webkit-scrollbar { display: none; }
+
+    .card {
+      background: linear-gradient(180deg, #1a1a1a 0%, #101010 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 0 0 1px rgba(255,255,255,.045);
+      border-radius: var(--radius); position: relative;
+    }
+    .row {
+      background: linear-gradient(180deg, #161616 0%, #101010 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 0 0 1px rgba(255,255,255,.04);
+      border-radius: 18px;
+    }
+    .steel {
+      position: relative; isolation: isolate; overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.1), transparent 42%),
+        linear-gradient(100deg, #2e2e30 0%, #161618 18%, #3a3a3c 40%, #121214 62%, #2a2a2c 82%, #1a1a1c 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.2), inset 0 -1px 0 rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.06);
+      border-radius: var(--radius);
+    }
+    .steel::before {
+      content: ""; position: absolute; inset: 0; border-radius: inherit;
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0 1px, transparent 1px 3px);
+      opacity: .7; pointer-events: none; mix-blend-mode: overlay;
+    }
+    .metal {
+      position: relative; isolation: isolate; overflow: hidden; color: var(--ink);
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.16) 0 1px, transparent 1px 3px),
+        linear-gradient(165deg, #f7f7f7 0%, #b4b4b4 16%, #ececec 34%, #8a8a8a 50%, #d8d8d8 68%, #9a9a9a 84%, #efefef 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.72), inset 0 -1px 0 rgba(0,0,0,.38), 0 2px 10px rgba(0,0,0,.45);
+    }
+    .pressable { transition: transform 150ms ease-out; }
+    .pressable:active { transform: scale(0.96); }
+
+    .kicker {
+      font-size: 10px; letter-spacing: .16em; font-weight: 600;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .num { font-variant-numeric: tabular-nums; }
+
+    .progress { height: 3px; width: 100%; border-radius: 9999px; background: rgba(255,255,255,.08); overflow: hidden; }
+    .progress > i { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
+
+    .dock {
+      padding: 8px 12px calc(12px + env(safe-area-inset-bottom));
+      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: 56px 64px; gap: 8px;
+      background: linear-gradient(180deg, transparent, var(--bg) 18%);
+    }
+    .dock-cell {
+      border-radius: var(--radius-tile);
+      background: linear-gradient(180deg, #1b1b1b 0%, #0e0e0e 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 0 0 1px rgba(255,255,255,.04);
+      color: var(--muted); display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: center; padding: 8px 10px;
+      transition: transform 150ms ease-out;
+    }
+    .dock-cell:active { transform: scale(0.96); }
+    .dock-cell.on {
+      color: var(--ink);
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.14) 0 1px, transparent 1px 3px),
+        linear-gradient(165deg, #f6f6f6 0%, #b8b8b8 18%, #e8e8e8 36%, #8d8d8d 52%, #d4d4d4 70%, #9a9a9a 86%, #ececec 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.7), inset 0 -1px 0 rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.45);
+    }
+    .dock-cell.on .dock-num, .dock-cell.on .dock-lab {
+      color: #1a1a1a; text-shadow: 0 1px 0 rgba(255,255,255,.28);
+    }
+    .dock-num { font-size: 10px; letter-spacing: .08em; font-weight: 600; opacity: .7; line-height: 1; }
+    .dock-lab { font-size: 11px; font-weight: 700; letter-spacing: .04em; line-height: 1.15; margin-top: 4px; }
+
+    .orb {
+      grid-column: 2; grid-row: 2; justify-self: center; align-self: center;
+      width: 58px; height: 58px; border-radius: 9999px; margin-top: -6px;
+      background: radial-gradient(circle at 35% 30%, #2a2a2c, #0a0a0a 70%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 0 0 1px rgba(255,255,255,.12), 0 8px 20px rgba(0,0,0,.55);
+      display: grid; place-items: center; transition: transform 150ms ease-out;
+    }
+    .orb:active { transform: scale(0.96); }
+    .orb.on {
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.16) 0 1px, transparent 1px 3px),
+        linear-gradient(165deg, #f4f4f4, #9a9a9a 50%, #e8e8e8);
+    }
+
+    .page { animation: pageIn 420ms cubic-bezier(.22,1,.36,1) both; }
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(14px); filter: blur(4px); }
+      to { opacity: 1; transform: none; filter: none; }
+    }
+    .stagger > * { animation: fadeUp 480ms cubic-bezier(.22,1,.36,1) both; }
+    .stagger > *:nth-child(1) { animation-delay: 40ms; }
+    .stagger > *:nth-child(2) { animation-delay: 90ms; }
+    .stagger > *:nth-child(3) { animation-delay: 140ms; }
+    .stagger > *:nth-child(4) { animation-delay: 190ms; }
+    .stagger > *:nth-child(5) { animation-delay: 240ms; }
+    .stagger > *:nth-child(6) { animation-delay: 290ms; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); filter: blur(3px); }
+      to { opacity: 1; transform: none; filter: none; }
+    }
+
+    .cal-cell {
+      aspect-ratio: 1; border-radius: 10px; display: grid; place-items: center;
+      font-size: 12px; font-weight: 600; color: var(--muted); background: transparent;
+    }
+    .cal-cell.hit {
+      background: linear-gradient(180deg, #2a2a2c, #161616); color: var(--fg);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 0 0 1px rgba(255,255,255,.08);
+    }
+    .cal-cell.today { box-shadow: 0 0 0 1px var(--accent); color: var(--fg); }
+    .cal-cell.hit.today { background: var(--accent); color: #fff; box-shadow: none; }
+
+    .overlay {
+      position: absolute; inset: 0; z-index: 30; background: var(--bg);
+      display: flex; flex-direction: column;
+    }
+    .bubble-user {
+      align-self: flex-end; max-width: 80%; border-radius: 16px 16px 4px 16px;
+      padding: 10px 14px; font-size: 14px; line-height: 1.45;
+    }
+    .bubble-arthur {
+      align-self: flex-start; max-width: 80%; border-radius: 16px 16px 16px 4px;
+      padding: 10px 14px; font-size: 14px; line-height: 1.45;
+    }
+    .wave { display: flex; align-items: end; gap: 3px; height: 22px; }
+    .wave span {
+      display: block; width: 3px; border-radius: 99px; background: var(--metal);
+      animation: wave .9s ease-in-out infinite; transform-origin: center;
+    }
+    .wave span:nth-child(1) { height: 10px; animation-delay: 0ms; }
+    .wave span:nth-child(2) { height: 22px; animation-delay: 80ms; }
+    .wave span:nth-child(3) { height: 16px; animation-delay: 160ms; }
+    .wave span:nth-child(4) { height: 26px; animation-delay: 240ms; }
+    .wave span:nth-child(5) { height: 12px; animation-delay: 320ms; }
+    @keyframes wave {
+      0%, 100% { transform: scaleY(.45); opacity: .55; }
+      50% { transform: scaleY(1); opacity: 1; }
+    }
+    .splash {
+      position: absolute; inset: 0; z-index: 50; background: var(--bg);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .splash-logo { width: 72px; height: 72px; }
+    .hidden { display: none !important; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-3 { margin-bottom: 12px; }
+    .mb-4 { margin-bottom: 16px; }
+    .mb-5 { margin-bottom: 20px; }
+    .mt-1 { margin-top: 4px; }
+    .mt-2 { margin-top: 8px; }
+    .mt-3 { margin-top: 12px; }
+    .mt-auto { margin-top: auto; }
+    .w-full { width: 100%; }
+    .text-left { text-align: left; }
+    .text-center { text-align: center; }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .min-h-card { min-height: 144px; }
+    .p-4 { padding: 16px; }
+    .p-5 { padding: 20px; }
+    .px-3 { padding-left: 12px; padding-right: 12px; }
+    .py-3 { padding-top: 12px; padding-bottom: 12px; }
+    .text-sm { font-size: 14px; }
+    .text-xs { font-size: 12px; }
+    .text-2xs { font-size: 11px; }
+    .text-lg { font-size: 18px; }
+    .text-2xl { font-size: 24px; }
+    .text-3xl { font-size: 30px; }
+    .text-4xl { font-size: 36px; }
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+    .tracking-tight { letter-spacing: -0.02em; }
+    .text-muted { color: var(--muted); }
+    .text-faint { color: var(--faint); }
+    .text-accent { color: var(--accent); }
+    .text-fg { color: var(--fg); }
+    .line-through { text-decoration: line-through; }
+    .rounded-full { border-radius: 9999px; }
+    .rounded-xl { border-radius: 12px; }
+    .size-6 { width: 24px; height: 24px; }
+    .size-10 { width: 40px; height: 40px; }
+    .size-11 { width: 44px; height: 44px; }
+    .flex-1 { flex: 1; min-width: 0; }
+    .space-y-2 > * + * { margin-top: 8px; }
+    .space-y-3 > * + * { margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone" id="app">
+      <div class="splash" id="splash">
+        <svg class="splash-logo" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <linearGradient id="m" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f4f4f4"/><stop offset="0.28" stop-color="#9a9a9a"/>
+              <stop offset="0.5" stop-color="#ececec"/><stop offset="0.78" stop-color="#6e6e6e"/>
+              <stop offset="1" stop-color="#d8d8d8"/>
+            </linearGradient>
+          </defs>
+          <rect x="6" y="32" width="14" height="26" rx="4" fill="url(#m)"/>
+          <rect x="25" y="6" width="14" height="52" rx="4" fill="url(#m)"/>
+          <rect x="44" y="18" width="14" height="40" rx="4" fill="url(#m)"/>
+        </svg>
+        <div class="mt-3 text-center" style="animation: fadeUp 700ms 400ms both">
+          <div class="text-2xl font-semibold tracking-tight">Echo</div>
+          <div class="text-2xl" style="font-weight:300;color:var(--metal)">Planner</div>
+        </div>
+      </div>
+
+      <main class="scroll" id="main"></main>
+      <nav class="dock" id="dock" aria-label="Разделы"></nav>
+      <div class="overlay hidden" id="arthur"></div>
+      <div class="overlay hidden" id="paywall"></div>
+    </div>
+  </div>
+
+<script>
+/* ========== STORAGE ========== */
+const KEY = 'echo-planner-v2';
+const CAT_RU = { cafe:'Кафе', groceries:'Продукты', taxi:'Такси', sub:'Подписки', shop:'Шопинг', rent:'Жильё', health:'Здоровье', other:'Другое' };
+
+function uid(p='id'){ return p+'_'+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4); }
+function iso(d=new Date()){ return d.toISOString().slice(0,10); }
+function hhmm(d=new Date()){ return d.toTimeString().slice(0,5); }
+function money(n){ return Math.abs(Math.round(n)).toLocaleString('ru-RU').replace(/\u00A0/g,' ')+' ₽'; }
+function num(n){ return Math.round(n).toLocaleString('ru-RU').replace(/\u00A0/g,' '); }
+
+const MONTHS = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const MONTHS_IN = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
+const MONTHS_UP = ['ЯНВАРЬ','ФЕВРАЛЬ','МАРТ','АПРЕЛЬ','МАЙ','ИЮНЬ','ИЮЛЬ','АВГУСТ','СЕНТЯБРЬ','ОКТЯБРЬ','НОЯБРЬ','ДЕКАБРЬ'];
+const WEEKDAYS = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+const WEEK_SHORT = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+
+function dayTitle(d=new Date()){ return d.getDate()+' '+MONTHS[d.getMonth()]; }
+function greeting(d=new Date()){
+  const h=d.getHours();
+  if(h<5||h>=22) return 'Доброй ночи';
+  if(h<12) return 'Доброе утро';
+  if(h<18) return 'Добрый день';
+  return 'Добрый вечер';
+}
+function formatWhen(date,time){
+  const d=new Date(date+'T12:00:00');
+  const t=new Date(); t.setHours(0,0,0,0);
+  const diff=Math.round((d-t)/86400000);
+  if(diff===0) return 'Сегодня, '+time;
+  if(diff===-1) return 'Вчера, '+time;
+  return d.getDate()+' '+MONTHS[d.getMonth()]+', '+time;
+}
+function relativeShort(isoStr){
+  const mins=Math.round((Date.now()-new Date(isoStr).getTime())/60000);
+  if(mins<5) return 'только что';
+  if(mins<60) return mins+' мин назад';
+  const d=new Date(isoStr);
+  const t=new Date(); t.setHours(0,0,0,0);
+  const day=new Date(d); day.setHours(0,0,0,0);
+  if(+day===+t) return 'сегодня';
+  if(+day===t-86400000) return 'вчера';
+  return d.getDate()+' '+MONTHS[d.getMonth()].slice(0,3);
+}
+function inMonth(date){
+  const d=new Date(date+'T12:00:00'), n=new Date();
+  return d.getMonth()===n.getMonth() && d.getFullYear()===n.getFullYear();
+}
+function inWeek(date){
+  const d=new Date(date+'T12:00:00'), n=new Date();
+  const day=(n.getDay()+6)%7;
+  const start=new Date(n); start.setHours(0,0,0,0); start.setDate(n.getDate()-day);
+  const end=new Date(start); end.setDate(start.getDate()+6); end.setHours(23,59,59,999);
+  return d>=start && d<=end;
+}
+function countdown(date,time){
+  const t=new Date(date+'T'+time+':00');
+  const mins=Math.round((t-Date.now())/60000);
+  if(mins<-60) return 'уже прошло';
+  if(mins<0) return 'сейчас';
+  if(mins<60) return 'через '+mins+' мин';
+  const days=Math.round((new Date(date+'T12:00:00')-new Date().setHours(0,0,0,0))/86400000);
+  if(days>=1) return days===1?'завтра, '+time:new Date(date+'T12:00:00').getDate()+' '+MONTHS[new Date(date+'T12:00:00').getMonth()]+', '+time;
+  const h=Math.floor(mins/60), r=mins%60;
+  return r===0?'через '+h+' ч':'через '+h+' ч '+r+' мин';
+}
+function guessCat(title){
+  const t=title.toLowerCase();
+  if(/кафе|кофе|ресторан|бар/.test(t)) return 'cafe';
+  if(/продукт|магазин|перекрёсток|пятерочк|вкусвилл/.test(t)) return 'groceries';
+  if(/такси|яндекс|uber|ситимобил/.test(t)) return 'taxi';
+  if(/подписк|spotify|apple|youtube|иви|okko/.test(t)) return 'sub';
+  if(/шоп|одежд|zara|nike|ozon|wildberries|wb/.test(t)) return 'shop';
+  if(/аренда|квартир|ипотек/.test(t)) return 'rent';
+  if(/аптек|врач|клиник|стомат/.test(t)) return 'health';
+  return 'other';
+}
+
+function buildSeed(){
+  const today=iso(), y=iso(new Date(Date.now()-86400000)), d2=iso(new Date(Date.now()-2*86400000));
+  const now=new Date().toISOString();
+  return {
+    plan:'pro', budget:80000, calorieGoal:2500, displayName:'ECHO',
+    expenses:[
+      {id:'ex_cafe',title:'Кафе с друзьями',amount:1240,category:'cafe',date:today,time:'20:15'},
+      {id:'ex_food',title:'Продукты',amount:832,category:'groceries',date:today,time:'14:32'},
+      {id:'ex_taxi',title:'Такси',amount:487,category:'taxi',date:today,time:'09:10'},
+      {id:'ex_sub',title:'Подписка',amount:299,category:'sub',date:y,time:'21:48'},
+      {id:'ex_ozon',title:'Ozon',amount:2000,category:'shop',date:y,time:'19:18'},
+      {id:'ex_pharm',title:'Аптека',amount:732,category:'health',date:y,time:'12:05'},
+      {id:'ex_shop',title:'Шопинг',amount:3450,category:'shop',date:d2,time:'18:22'},
+      {id:'ex_flowers',title:'Цветы',amount:1890,category:'shop',date:d2,time:'16:40'},
+      {id:'ex_rest',title:'Ресторан «Сахалин»',amount:4350,category:'cafe',date:d2,time:'21:10'},
+      {id:'ex_rent',title:'Аренда квартиры',amount:28000,category:'rent',date:d2,time:'10:00'},
+    ],
+    meetings:[
+      {id:'mt_call',title:'Созвон по проекту',date:iso(new Date(Date.now()+86400000)),time:'11:00'},
+      {id:'mt_friend',title:'Встреча с другом',date:iso(new Date(Date.now()+3*86400000)),time:'21:00',place:'Центр'},
+      {id:'mt_gym',title:'Тренер, зал',date:iso(new Date(Date.now()+5*86400000)),time:'19:30',place:'World Class'},
+    ],
+    tasks:[
+      {id:'tk_los',title:'Поставь Лосяру',done:false,createdAt:now},
+      {id:'tk_call',title:'Созвон с командой',done:false,createdAt:new Date(Date.now()-2*3600000).toISOString()},
+      {id:'tk_pay',title:'Оплатить квартиру',done:false,createdAt:new Date(Date.now()-86400000).toISOString()},
+      {id:'tk_tix',title:'Купить билеты',done:false,createdAt:new Date(Date.now()-1.4*86400000).toISOString()},
+      {id:'tk_art',title:'Написать Артёму',done:false,createdAt:new Date(Date.now()-2*86400000).toISOString()},
+      {id:'tk_pick',title:'Забрать заказ',done:false,createdAt:new Date(Date.now()-2.5*86400000).toISOString()},
+      {id:'tk_gym',title:'Тренировка 20:00',done:false,createdAt:new Date(Date.now()-0.5*86400000).toISOString()},
+      {id:'tk_d1',title:'Ответить дизайнеру',done:true,createdAt:new Date(Date.now()-1.1*86400000).toISOString()},
+      {id:'tk_d2',title:'Скинуть смету',done:true,createdAt:new Date(Date.now()-2.2*86400000).toISOString()},
+    ],
+    meals:[
+      {id:'ml_b',title:'Овсянка с ягодами',calories:420,protein:18,fat:12,carbs:62,date:today,time:'09:20'},
+      {id:'ml_l',title:'Курица с рисом',calories:680,protein:48,fat:18,carbs:72,date:today,time:'13:40'},
+      {id:'ml_s',title:'Кофе и круассан',calories:380,protein:8,fat:18,carbs:46,date:today,time:'16:10'},
+      {id:'ml_d',title:'Лосось и салат',calories:360,protein:34,fat:16,carbs:14,date:today,time:'19:50'},
+    ],
+    notes:[{id:'nt_1',body:'Идея: вечерний дайджест голосом, 20 секунд, без экрана.',createdAt:new Date(Date.now()-86400000).toISOString()}],
+    chat:[{id:'c_hi',role:'arthur',text:'Я Артур. Кидай голос или текст — разложу по полочкам. Спроси, сколько сжёг за месяц, что по встречам, что по еде.',ts:now}],
+  };
+}
+
+function load(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(raw) return {...buildSeed(), ...JSON.parse(raw)};
+  }catch{}
+  return buildSeed();
+}
+function save(){
+  const {tab,arthurOpen,paywallOpen,...rest}=state;
+  localStorage.setItem(KEY, JSON.stringify(rest));
+}
+
+let state={...load(), tab:'digest', arthurOpen:false, paywallOpen:false, filterMoney:'all', filterTasks:'open', calCursor:new Date(), calPicked:iso()};
+
+/* ========== ICONS ========== */
+function markSVG(inverted=false){
+  const g=inverted
+    ? '<stop offset="0" stop-color="#2a2a2a"/><stop offset=".4" stop-color="#111"/><stop offset=".55" stop-color="#4a4a4a"/><stop offset="1" stop-color="#1a1a1a"/>'
+    : '<stop offset="0" stop-color="#f4f4f4"/><stop offset=".28" stop-color="#9a9a9a"/><stop offset=".5" stop-color="#ececec"/><stop offset=".78" stop-color="#6e6e6e"/><stop offset="1" stop-color="#d8d8d8"/>';
+  const id='g'+Math.random().toString(36).slice(2,6);
+  return `<svg viewBox="0 0 64 64" width="28" height="28" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">${g}</linearGradient></defs>
+    <rect x="6" y="32" width="14" height="26" rx="4" fill="url(#${id})"/>
+    <rect x="25" y="6" width="14" height="52" rx="4" fill="url(#${id})"/>
+    <rect x="44" y="18" width="14" height="40" rx="4" fill="url(#${id})"/></svg>`;
+}
+function catIcon(c){
+  const paths={
+    cafe:'M4 7h11v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7zm11 2h3a2 2 0 0 1 2 2v2a4 4 0 0 1-4 4h-1',
+    groceries:'M5 8h14l-1.2 11H6.2L5 8zm2-3 1.2 3M17 5l-1.2 3M9 12h6',
+    taxi:'M5 11 7 7h10l2 4v6H5v-6zm0 6h2m10 0h2M7 14h.01M17 14h.01',
+    sub:'M4 12a8 8 0 0 1 14.5-4M20 12a8 8 0 0 1-14.5 4M16 4h4v4M4 16v4h4',
+    shop:'M6 8h12l-1 12H7L6 8zm3-4h6l1 4H8l1-4z',
+    rent:'M4 11 12 4l8 7v9H4v-9zm6 9v-6h4v6',
+    health:'M9 4h6v5h5v6h-5v5H9v-5H4V9h5z',
+    other:'M12 5v14M5 12h14'
+  };
+  return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="${paths[c]||paths.other}" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+/* ========== PARSE / ARTHUR LOCAL ========== */
+function parseLocal(text){
+  const raw=text.trim(); if(!raw) return [];
+  const t=raw.toLowerCase();
+  const now=new Date();
+  let date=iso(now);
+  if(/\bзавтра\b/.test(t)) date=iso(new Date(Date.now()+86400000));
+  if(/\bпослезавтра\b/.test(t)) date=iso(new Date(Date.now()+2*86400000));
+  if(/\bвчера\b/.test(t)) date=iso(new Date(Date.now()-86400000));
+  const tm=t.match(/\b(?:в\s*)?(\d{1,2})[:.](\d{2})\b/);
+  const time=tm?String(tm[1]).padStart(2,'0')+':'+tm[2]:hhmm(now);
+  const am=raw.replace(/\u00A0/g,' ').match(/(\d[\d\s]{0,8})\s*(?:₽|р(?:уб(?:лей|ля|ль)?)?)?/i);
+  const amount=am?Number(am[1].replace(/\s/g,'')):undefined;
+
+  if(amount && amount>0 && /(потрат|купил|заплат|снял|расход|₽|руб|стоит)/i.test(t)){
+    const title=raw.replace(/\d[\d\s]*\s*(?:₽|р(?:уб.*)?)?/gi,'').replace(/^(я\s+)?(потратил[аи]?|купил[аи]?|заплатил[аи]?)\s*/i,'').replace(/\s+(сегодня|вчера|завтра).*$/i,'').replace(/\s{2,}/g,' ').trim()||'Расход';
+    return [{kind:'expense',title,amount,category:guessCat(title),date,time}];
+  }
+  if(/(встреч|созвон|митинг)/i.test(t)){
+    const title=raw.replace(/\b(сегодня|завтра|послезавтра)\b/gi,'').replace(/\bв\s*\d{1,2}[:.]\d{2}\b/gi,'').replace(/^(запиши|добавь)\s+/i,'').replace(/\s{2,}/g,' ').trim()||'Встреча';
+    return [{kind:'meeting',title,date,time}];
+  }
+  if(/(поел|съел|завтрак|обед|ужин|перекус|ккал)/i.test(t)){
+    const cal=raw.match(/(\d{2,4})\s*ккал/i);
+    const title=raw.replace(/^(я\s+)?(поел[аи]?|съел[аи]?)\s*/i,'').replace(/\d+\s*ккал.*/i,'').replace(/\s{2,}/g,' ').trim()||'Приём пищи';
+    const calories=cal?Number(cal[1]):450;
+    return [{kind:'meal',title,date,time,calories,protein:Math.round(calories*.08),fat:Math.round(calories*.035),carbs:Math.round(calories*.1)}];
+  }
+  if(/(надо|задач|не забудь|сделай|поставь)/i.test(t)){
+    return [{kind:'task',title:raw.replace(/^(надо|не забудь|задач[аи]?)\s*/i,'').trim()||'Задача'}];
+  }
+  if(/(запиши|заметк|мысль)/i.test(t)){
+    return [{kind:'note',body:raw.replace(/^(запиши|заметка)\s*/i,'').trim()||raw}];
+  }
+  if(amount && amount>=50){
+    const title=raw.replace(/\d[\d\s]*\s*(?:₽|р(?:уб.*)?)?/gi,'').replace(/\s{2,}/g,' ').trim()||'Расход';
+    return [{kind:'expense',title,amount,category:guessCat(raw),date,time}];
+  }
+  return [];
+}
+
+function applyEntries(entries){
+  let n=0;
+  const nowDate=iso(), nowTime=hhmm();
+  for(const e of entries){
+    const date=e.date||nowDate, time=e.time||nowTime;
+    if(e.kind==='expense' && e.amount>0){
+      state.expenses.unshift({id:uid('ex'),title:e.title||'Расход',amount:e.amount,category:e.category||guessCat(e.title||''),date,time}); n++;
+    } else if(e.kind==='meeting'){
+      state.meetings.push({id:uid('mt'),title:e.title||'Встреча',date,time,place:e.place}); n++;
+    } else if(e.kind==='task'){
+      state.tasks.unshift({id:uid('tk'),title:e.title||'Задача',done:false,createdAt:new Date().toISOString()}); n++;
+    } else if(e.kind==='meal'){
+      state.meals.unshift({id:uid('ml'),title:e.title||'Приём пищи',calories:e.calories||0,protein:e.protein||0,fat:e.fat||0,carbs:e.carbs||0,date,time}); n++;
+    } else if(e.kind==='note'){
+      const body=e.body||e.title; if(body){ state.notes.unshift({id:uid('nt'),body,createdAt:new Date().toISOString()}); n++; }
+    }
+  }
+  if(n) save();
+  return n;
+}
+
+function spentMonth(){ return state.expenses.filter(e=>inMonth(e.date)).reduce((a,e)=>a+e.amount,0); }
+function kcalToday(){ return state.meals.filter(m=>m.date===iso()).reduce((a,m)=>a+m.calories,0); }
+
+function localArthur(text){
+  const t=text.toLowerCase();
+  const spent=spentMonth();
+  if(/[?]|сколько|какой|какая|когда|что по|остаток|есть ли/.test(t)){
+    if(/(потрат|расход|денег|бюджет|остат|money|финанс)/.test(t)){
+      if(!state.expenses.length) return {reply:'Нет записей.',entries:[]};
+      const top=[...state.expenses].sort((a,b)=>b.amount-a.amount)[0];
+      return {reply:`Потрачено ${money(spent)} из ${money(state.budget)}. Остаток ${money(state.budget-spent)}. Самое жирное — ${top.title} на ${money(top.amount)}.`,entries:[]};
+    }
+    if(/(встреч|календар|когда)/.test(t)){
+      if(!state.meetings.length) return {reply:'Нет записей.',entries:[]};
+      const next=[...state.meetings].sort((a,b)=>a.date===b.date?a.time.localeCompare(b.time):a.date.localeCompare(b.date))[0];
+      return {reply:`Ближайшая — ${next.title}, ${next.date} в ${next.time}. Всего ${state.meetings.length}.`,entries:[]};
+    }
+    if(/(задач|todo)/.test(t)){
+      const open=state.tasks.filter(x=>!x.done);
+      if(!state.tasks.length) return {reply:'Нет записей.',entries:[]};
+      return {reply:`Открыто ${open.length} из ${state.tasks.length}. Первая — ${open[0]?.title||'всё закрыто'}.`,entries:[]};
+    }
+    if(/(ккал|калори|поел|еда|питани|бжу)/.test(t)){
+      if(!state.meals.length) return {reply:'Нет записей.',entries:[]};
+      const k=kcalToday();
+      return {reply:`Сегодня ${num(k)} из ${num(state.calorieGoal)} ккал. Осталось ${num(Math.max(0,state.calorieGoal-k))}.`,entries:[]};
+    }
+    return {reply:'Не нашёл. Спроси про деньги, встречи, задачи или еду.',entries:[]};
+  }
+  const entries=parseLocal(text);
+  if(!entries.length) return {reply:'Не понял. Скажи «потратил 430 в кафе», «встреча завтра в 21:00» или «поел курицу».',entries:[]};
+  const e=entries[0];
+  if(e.kind==='expense') return {reply:`Записал. ${e.title} — ${money(e.amount)}.`,entries};
+  if(e.kind==='meeting') return {reply:`Поставил. ${e.title} — ${e.date} в ${e.time}.`,entries};
+  if(e.kind==='task') return {reply:`В задачи. ${e.title}.`,entries};
+  if(e.kind==='meal') return {reply:`К еде. ${e.title}${e.calories?', ~'+e.calories+' ккал':''}.`,entries};
+  return {reply:'Записал в заметки.',entries};
+}
+
+/* ========== RENDER ========== */
+function progress(v){ return `<div class="progress"><i style="width:${Math.max(0,Math.min(100,v))}%"></i></div>`; }
+
+function renderDock(){
+  const cells=[
+    {id:'digest',num:'01',lab:'DIGEST',col:'1',row:'1'},
+    {id:'tasks',num:'02',lab:'TASKS',col:'2',row:'1'},
+    {id:'notes',num:'03',lab:'NOTES',col:'3',row:'1'},
+    {id:'money',num:'04',lab:'MONEY',col:'4',row:'1'},
+    {id:'meetings',num:'05',lab:'MEETINGS',col:'1',row:'2'},
+    {id:'food',num:'06',lab:'FOOD',col:'3',row:'2'},
+    {id:'settings',num:'07',lab:'SETTINGS',col:'4',row:'2'},
+  ];
+  document.getElementById('dock').innerHTML=cells.map(c=>`
+    <button type="button" class="dock-cell ${state.tab===c.id&&!state.arthurOpen?'on':''}" style="grid-column:${c.col};grid-row:${c.row}" data-tab="${c.id}">
+      <span class="dock-num">${c.num}</span><span class="dock-lab">${c.lab}</span>
+    </button>`).join('')+`
+    <button type="button" class="orb ${state.arthurOpen?'on':''}" id="orbBtn" aria-label="Чат с Артуром">${markSVG(state.arthurOpen)}</button>`;
+  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{ state.tab=b.dataset.tab; state.arthurOpen=false; render(); });
+  document.getElementById('orbBtn').onclick=()=>{ state.arthurOpen=!state.arthurOpen; render(); };
+}
+
+function backHead(title,sub){
+  return `<div class="mb-5 flex items-center gap-2">
+    <button type="button" class="pressable size-11" id="backBtn" aria-label="Назад">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 5 L8 12 L15 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div>
+      <h1 class="text-3xl font-semibold tracking-tight">${title}</h1>
+      ${sub?`<div class="mt-1 text-sm font-semibold text-accent">${sub}</div>`:''}
+    </div>
+  </div>`;
+}
+
+function renderDigest(){
+  const now=new Date();
+  const active=state.tasks.filter(t=>!t.done);
+  const weekM=state.meetings.filter(m=>inWeek(m.date));
+  const spent=spentMonth();
+  const kcal=kcalToday();
+  const next=[...state.meetings].filter(m=>m.date>=iso()).sort((a,b)=>a.date===b.date?a.time.localeCompare(b.time):a.date.localeCompare(b.date))[0];
+  const insight=next?`Ближайшее: ${next.title} · ${next.date.slice(8)}.${next.date.slice(5,7)} в ${next.time}`:(active[0]?`В фокусе: ${active[0].title}`:'Тихий день. Можно дышать.');
+  return `<div class="page stagger">
+    <header class="mb-5 flex justify-between items-center">
+      <div>
+        <div class="text-sm text-muted">${WEEKDAYS[now.getDay()]}</div>
+        <h1 class="text-4xl font-semibold tracking-tight mt-1">${dayTitle(now)}</h1>
+        <div class="mt-1 text-sm text-muted">${greeting(now)}</div>
+      </div>
+      <button type="button" class="pressable" id="logoBtn">${markSVG()}</button>
+    </header>
+    <button type="button" class="card pressable w-full text-left p-4 mb-3" data-go="tasks">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2"><span style="width:6px;height:6px;border-radius:50%;background:var(--muted)"></span><span class="kicker">Задача</span></div>
+        <span class="text-2xs text-faint">${active[0]?relativeShort(active[0].createdAt):'пусто'}</span>
+      </div>
+      <div class="mt-2 text-lg font-medium tracking-tight">${active[0]?active[0].title:'Нет активных задач'}</div>
+    </button>
+    <div class="grid2 mb-3">
+      <button type="button" class="card pressable text-left p-4 min-h-card flex" style="flex-direction:column" data-go="tasks">
+        <div class="kicker">Tasks</div>
+        <div class="num text-4xl font-semibold tracking-tight mt-3">${active.length}</div>
+        <div class="mt-auto pt-3 text-2xs text-muted flex justify-between"><span>активных</span><span>›</span></div>
+      </button>
+      <button type="button" class="card pressable text-left p-4 min-h-card flex" style="flex-direction:column" data-go="notes">
+        <div class="kicker">Notes</div>
+        <div class="mt-4 text-fg" style="font-size:22px">+</div>
+        <div class="mt-auto pt-3 text-2xs text-muted">мысль или запись</div>
+      </button>
+      <button type="button" class="card pressable text-left p-4 min-h-card flex" style="flex-direction:column" data-go="meetings">
+        <div class="kicker">Meetings</div>
+        <div class="num text-4xl font-semibold tracking-tight mt-3">${weekM.length}</div>
+        <div class="mt-auto pt-3 text-2xs text-muted flex justify-between"><span>встречи на неделе</span><span>›</span></div>
+      </button>
+      <button type="button" class="card pressable text-left p-4 min-h-card flex" style="flex-direction:column" data-go="food">
+        <div class="kicker">Food</div>
+        <div class="num text-2xl font-semibold tracking-tight mt-3">${num(kcal)} / ${num(state.calorieGoal)}</div>
+        <div class="mt-auto space-y-2 pt-3"><div class="text-2xs text-muted">ккал сегодня</div>${progress(kcal/state.calorieGoal*100)}</div>
+      </button>
+    </div>
+    <button type="button" class="card pressable w-full text-left p-4 mb-3" data-go="money">
+      <div class="kicker">Money</div>
+      <div class="mt-2 flex justify-between items-end">
+        <div>
+          <div class="num text-3xl font-semibold tracking-tight">${money(spent)}</div>
+          <div class="mt-1 text-2xs text-muted">потрачено в ${MONTHS_IN[now.getMonth()]}</div>
+        </div><span class="text-faint">›</span>
+      </div>
+      <div class="mt-3">${progress(state.budget?spent/state.budget*100:0)}</div>
+    </button>
+    <p class="text-2xs text-faint" style="padding:0 4px 8px">${insight}</p>
+  </div>`;
+}
+
+function renderMoney(){
+  const items=state.expenses.filter(e=>inMonth(e.date)).sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+  const spent=items.reduce((a,e)=>a+e.amount,0);
+  const left=state.budget-spent;
+  const pct=state.budget?Math.round(spent/state.budget*100):0;
+  const days=new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
+  const avg=Math.round(spent/days);
+  const visible=state.filterMoney==='all'?items:items.filter(e=>e.category===state.filterMoney);
+  const cats={};
+  items.forEach(e=>{ cats[e.category]=(cats[e.category]||0)+e.amount; });
+  const catList=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+
+  return `<div class="page stagger">
+    ${backHead('MONEY', MONTHS_UP[new Date().getMonth()])}
+    <div class="steel p-5 mb-3">
+      <div class="kicker">Потрачено</div>
+      <div class="mt-2 flex justify-between items-end">
+        <div class="num text-4xl font-semibold tracking-tight">${money(spent)}</div>
+        <div class="num text-sm font-semibold text-muted">${pct}%</div>
+      </div>
+      <div class="mt-1 text-2xs text-muted">из ${money(state.budget)}</div>
+      <div class="mt-4">${progress(pct)}</div>
+    </div>
+    <div class="grid2 mb-4">
+      <div class="steel p-4"><div class="kicker">В среднем в день</div><div class="num text-2xl font-semibold mt-2">${money(avg)}</div></div>
+      <div class="steel p-4"><div class="kicker">Остаток</div><div class="num text-2xl font-semibold mt-2">${money(left)}</div></div>
+    </div>
+    <div class="flex justify-between items-center mb-3">
+      <div class="kicker">Расходы</div>
+      <button type="button" class="text-2xs font-semibold text-muted" id="filterBtn">${state.filterMoney==='all'?'Все':CAT_RU[state.filterMoney]} ▾</button>
+    </div>
+    <div class="space-y-2 mb-5" id="expList">
+      ${visible.length?visible.map(e=>`
+        <button type="button" class="row pressable w-full text-left flex items-center gap-3 px-3 py-3" data-del-exp="${e.id}">
+          <span class="size-10 flex items-center justify-center rounded-xl" style="background:#0c0c0c;box-shadow:0 0 0 1px rgba(255,255,255,.07)">${catIcon(e.category)}</span>
+          <span class="flex-1"><span class="text-sm font-medium truncate" style="display:block">${e.title}</span>
+          <span class="text-2xs text-muted">${formatWhen(e.date,e.time)}</span></span>
+          <span class="num text-sm font-semibold">-${money(e.amount)}</span>
+        </button>`).join(''):'<div class="card p-4 text-center text-sm text-muted">Нет записей</div>'}
+    </div>
+    ${catList.length?`<div class="card p-4 space-y-3 mb-3"><div class="kicker">Категории</div>
+      ${catList.slice(0,5).map(([c,n])=>`<div><div class="flex justify-between text-2xs mb-1"><span class="text-muted">${CAT_RU[c]}</span><span class="num">${money(n)}</span></div>${progress(spent?n/spent*100:0)}</div>`).join('')}
+    </div>`:''}
+  </div>`;
+}
+
+function renderTasks(){
+  const open=state.tasks.filter(t=>!t.done);
+  const done=state.tasks.filter(t=>t.done);
+  const vis=state.filterTasks==='all'?state.tasks:state.filterTasks==='open'?open:done;
+  const pct=Math.round(done.length/Math.max(1,state.tasks.length)*100);
+  return `<div class="page stagger">
+    ${backHead('TASKS','СЕГОДНЯ')}
+    <div class="card p-4 mb-4 flex justify-between items-center">
+      <div>
+        <div class="kicker">Прогресс</div>
+        <div class="mt-2 text-2xl font-semibold">${done.length}<span class="text-sm font-medium text-muted"> / ${state.tasks.length}</span></div>
+        <div class="mt-1 text-2xs text-muted">закрыто · ${open.length} ещё в работе</div>
+      </div>
+      <div class="text-center"><div class="text-lg font-semibold text-accent">${pct}%</div><div class="text-2xs text-muted">готово</div></div>
+    </div>
+    <form class="card p-2 mb-3 flex items-center gap-2" id="taskForm">
+      <input class="flex-1 text-sm" style="height:44px;padding:0 12px" placeholder="Новая задача" id="taskInput"/>
+      <button type="submit" class="metal pressable rounded-xl" style="padding:8px 16px;font-size:12px;font-weight:600">Добавить</button>
+    </form>
+    <div class="flex gap-2 mb-3">
+      ${[['open','Активные '+open.length],['done','Готово '+done.length],['all','Все']].map(([id,lab])=>
+        `<button type="button" class="${state.filterTasks===id?'metal':'row text-muted'} rounded-full text-2xs font-semibold" style="padding:4px 12px" data-tf="${id}">${lab}</button>`
+      ).join('')}
+    </div>
+    <div class="space-y-2">
+      ${vis.map(t=>`
+        <div class="row flex items-center gap-3 px-3 py-3">
+          <button type="button" class="${t.done?'metal':''} size-6 rounded-full flex items-center justify-center" style="${t.done?'':'box-shadow:0 0 0 1px rgba(255,255,255,.12)'}" data-toggle="${t.id}">
+            ${t.done?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="#111" stroke-width="2.4" stroke-linecap="round"/></svg>':''}
+          </button>
+          <div class="flex-1">
+            <div class="text-sm font-medium ${t.done?'text-faint line-through':''}">${t.title}</div>
+            <div class="text-2xs text-faint">${relativeShort(t.createdAt)}</div>
+          </div>
+          <button type="button" class="text-2xs text-faint" data-del-task="${t.id}">удалить</button>
+        </div>`).join('')||'<div class="card p-4 text-center text-muted text-sm">Пусто</div>'}
+    </div>
+  </div>`;
+}
+
+function renderNotes(){
+  return `<div class="page stagger">
+    ${backHead('NOTES','МЫСЛИ')}
+    <div class="card p-4 mb-4">
+      <textarea id="noteDraft" rows="3" class="w-full text-sm" style="resize:none;line-height:1.5" placeholder="Мысль или запись…"></textarea>
+      <div class="mt-3" style="display:flex;justify-content:flex-end">
+        <button type="button" class="metal pressable rounded-xl text-xs font-semibold" style="padding:8px 16px" id="noteSave">+ Сохранить</button>
+      </div>
+    </div>
+    <div class="space-y-2">
+      ${state.notes.map(n=>`
+        <div class="row px-3 py-3">
+          <div class="text-2xs text-faint">${relativeShort(n.createdAt)}</div>
+          <div class="mt-1 text-sm">${n.body}</div>
+          <button type="button" class="mt-2 text-2xs text-muted" data-del-note="${n.id}">удалить</button>
+        </div>`).join('')||'<div class="card p-4 text-center text-muted text-sm">Пока пусто</div>'}
+    </div>
+  </div>`;
+}
+
+function renderMeetings(){
+  const cursor=state.calCursor;
+  const y=cursor.getFullYear(), m=cursor.getMonth();
+  const first=new Date(y,m,1);
+  const last=new Date(y,m+1,0);
+  const pad=(first.getDay()+6)%7;
+  const byDate={};
+  state.meetings.forEach(mt=>{ (byDate[mt.date]=byDate[mt.date]||[]).push(mt); });
+  const weekCount=state.meetings.filter(mt=>inWeek(mt.date)).length;
+  const upcoming=[...state.meetings].filter(mt=>(mt.date+'T'+mt.time)>=new Date().toISOString().slice(0,16))
+    .sort((a,b)=>a.date===b.date?a.time.localeCompare(b.time):a.date.localeCompare(b.date));
+  const next=upcoming[0];
+  const selected=state.calPicked||iso();
+  const list=(byDate[selected]||[]).sort((a,b)=>a.time.localeCompare(b.time));
+  let cells='';
+  for(let i=0;i<pad;i++) cells+='<div></div>';
+  for(let d=1;d<=last.getDate();d++){
+    const key=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const hit=!!byDate[key];
+    const today=key===iso();
+    cells+=`<button type="button" class="cal-cell ${hit?'hit':''} ${today?'today':''}" data-day="${key}">${d}</button>`;
+  }
+  return `<div class="page stagger">
+    ${backHead('MEETINGS','НЕДЕЛЯ')}
+    <div class="grid2 mb-3">
+      <div class="steel p-4"><div class="kicker">На неделе</div><div class="num text-3xl font-semibold mt-2">${weekCount}</div><div class="text-2xs text-muted mt-1">встречи</div></div>
+      <div class="steel p-4"><div class="kicker">Ближайшая</div><div class="mt-2 text-sm font-semibold truncate">${next?next.title:'Нет записей'}</div><div class="text-2xs text-muted mt-1">${next?countdown(next.date,next.time):'—'}</div></div>
+    </div>
+    <div class="card p-4 mb-4">
+      <div class="flex justify-between items-center mb-3">
+        <button type="button" class="text-sm text-muted" id="calPrev">‹</button>
+        <div class="text-sm font-semibold" style="text-transform:capitalize">${MONTHS[m]} ${y}</div>
+        <button type="button" class="text-sm text-muted" id="calNext">›</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr)" class="mb-1">
+        ${WEEK_SHORT.map(d=>`<div class="text-center text-2xs text-faint" style="padding:4px 0;letter-spacing:.08em">${d}</div>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${cells}</div>
+      <p class="mt-3 text-center text-2xs text-faint">подсветка — дни со встречами</p>
+    </div>
+    <form class="card p-2 mb-3 flex items-center gap-2" id="meetForm">
+      <input class="flex-1 text-sm" style="height:44px;padding:0 12px" placeholder="Встреча ${selected}" id="meetTitle"/>
+      <input type="time" value="21:00" id="meetTime" class="text-sm" style="width:90px;height:44px"/>
+      <button type="submit" class="metal pressable rounded-xl text-xs font-semibold" style="padding:8px 12px">Ок</button>
+    </form>
+    <div class="kicker mb-2">Список · ${selected}</div>
+    <div class="space-y-2">
+      ${list.map(mt=>`
+        <button type="button" class="row pressable w-full text-left flex justify-between items-center px-3 py-3" data-del-meet="${mt.id}">
+          <span><span class="text-sm font-medium" style="display:block">${mt.title}</span>
+          <span class="text-2xs text-muted">${formatWhen(mt.date,mt.time)}${mt.place?' · '+mt.place:''}</span></span>
+          <span class="text-2xs font-semibold text-accent">${countdown(mt.date,mt.time)}</span>
+        </button>`).join('')||'<div class="card p-4 text-center text-muted text-sm">В этот день тихо</div>'}
+    </div>
+  </div>`;
+}
+
+function renderFood(){
+  const today=state.meals.filter(m=>m.date===iso()).sort((a,b)=>a.time.localeCompare(b.time));
+  const kcal=today.reduce((a,m)=>a+m.calories,0);
+  const p=today.reduce((a,m)=>a+m.protein,0);
+  const f=today.reduce((a,m)=>a+m.fat,0);
+  const c=today.reduce((a,m)=>a+m.carbs,0);
+  const left=Math.max(0,state.calorieGoal-kcal);
+  return `<div class="page stagger">
+    ${backHead('FOOD','СЕГОДНЯ')}
+    <div class="steel p-5 mb-3">
+      <div class="kicker">Калории</div>
+      <div class="mt-2 flex justify-between items-end">
+        <div class="num text-4xl font-semibold tracking-tight">${num(kcal)}<span class="text-sm font-medium text-muted" style="margin-left:8px">/ ${num(state.calorieGoal)}</span></div>
+        <div class="text-sm font-semibold text-accent">${num(left)} left</div>
+      </div>
+      <div class="mt-4">${progress(kcal/state.calorieGoal*100)}</div>
+    </div>
+    <div class="card p-4 mb-4 flex justify-between" style="padding-left:24px;padding-right:24px">
+      <div class="text-center"><div class="text-lg font-semibold">${Math.round(p)}</div><div class="text-2xs text-muted">белки</div></div>
+      <div class="text-center"><div class="text-lg font-semibold">${Math.round(f)}</div><div class="text-2xs text-muted">жиры</div></div>
+      <div class="text-center"><div class="text-lg font-semibold">${Math.round(c)}</div><div class="text-2xs text-muted">углеводы</div></div>
+    </div>
+    <div class="flex gap-2 mb-4" style="flex-wrap:wrap">
+      ${[['Овсянка',420,18,12,62],['Курица с рисом',680,48,18,72],['Кофе',15,1,0,2],['Протеин',130,24,2,4]].map(([t,cal,pr,fa,ca])=>
+        `<button type="button" class="row pressable rounded-full text-2xs" style="padding:8px 12px" data-quick-meal='${JSON.stringify({title:t,calories:cal,protein:pr,fat:fa,carbs:ca})}'>+ ${t}</button>`
+      ).join('')}
+    </div>
+    <div class="kicker mb-2">Приёмы пищи</div>
+    <div class="space-y-2">
+      ${today.map(m=>`
+        <button type="button" class="row pressable w-full text-left flex justify-between items-center px-3 py-3" data-del-meal="${m.id}">
+          <span><span class="text-sm font-medium" style="display:block">${m.title}</span>
+          <span class="text-2xs text-muted">${formatWhen(m.date,m.time)}</span></span>
+          <span class="text-right"><span class="num text-sm font-semibold" style="display:block">${m.calories} ккал</span>
+          <span class="text-2xs text-faint">Б ${m.protein} · Ж ${m.fat} · У ${m.carbs}</span></span>
+        </button>`).join('')||'<div class="card p-4 text-center text-muted text-sm">Сегодня ещё не ел</div>'}
+    </div>
+  </div>`;
+}
+
+function renderSettings(){
+  return `<div class="page stagger">
+    ${backHead('SETTINGS','ECHO')}
+    <div class="steel p-4 mb-4 flex items-center gap-3">
+      <div class="size-11 flex items-center justify-center rounded-xl" style="background:var(--bg)">${markSVG()}</div>
+      <div>
+        <div class="text-lg font-semibold">${state.displayName}</div>
+        <div class="text-2xs text-muted">${state.plan==='forever'?'Тариф «Навсегда»':state.plan==='pro'?'Тариф Pro':'Нет тарифа'}</div>
+      </div>
+    </div>
+    <label class="card p-4 mb-3" style="display:block">
+      <div class="kicker">Имя</div>
+      <input class="mt-2 text-lg font-medium w-full" value="${state.displayName}" id="nameInput"/>
+    </label>
+    <label class="card p-4 mb-3" style="display:block">
+      <div class="kicker">Бюджет месяца, ₽</div>
+      <input type="number" class="mt-2 text-lg font-medium w-full num" value="${state.budget}" id="budgetInput"/>
+    </label>
+    <label class="card p-4 mb-4" style="display:block">
+      <div class="kicker">Цель по калориям</div>
+      <input type="number" class="mt-2 text-lg font-medium w-full num" value="${state.calorieGoal}" id="calInput"/>
+    </label>
+    <div class="kicker mb-2">Тарифы</div>
+    <p class="text-2xs text-muted mb-3">Бесплатного нет. Это продукт, не игрушка.</p>
+    <button type="button" class="card pressable w-full text-left p-4 mb-3" id="openPaywall">
+      <div class="flex justify-between items-center">
+        <div><div class="text-sm font-semibold">Pro · 250 ₽ / мес</div><div class="mt-1 text-2xs text-muted">Безлимит, статистика, Артур</div></div>
+        ${state.plan==='pro'?'<span class="metal rounded-full text-2xs font-bold" style="padding:4px 8px">сейчас</span>':''}
+      </div>
+    </button>
+    <button type="button" class="steel pressable w-full text-left p-4 mb-4" id="openPaywall2">
+      <div class="flex justify-between items-center">
+        <div><div class="text-sm font-semibold">Навсегда · 2 490 ₽</div><div class="mt-1 text-2xs text-muted">Все функции Pro, один платёж</div></div>
+        ${state.plan==='forever'?'<span class="metal rounded-full text-2xs font-bold" style="padding:4px 8px">сейчас</span>':''}
+      </div>
+    </button>
+    <button type="button" class="row pressable w-full text-left text-sm text-muted px-3 py-3" id="resetDemo">Сбросить демо</button>
+    <p class="mt-5 text-center text-2xs text-faint" style="line-height:1.5">ECHO Planner · голосовой трекер всего.<br/>ARTHUR слушает. Ты не открываешь приложение.</p>
+  </div>`;
+}
+
+function renderArthur(){
+  const el=document.getElementById('arthur');
+  if(!state.arthurOpen){ el.classList.add('hidden'); return; }
+  el.classList.remove('hidden');
+  el.innerHTML=`
+    <header class="flex items-center gap-2" style="padding:16px 12px 8px">
+      <button type="button" class="pressable size-11" id="arthurBack">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 5 L8 12 L15 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="flex-1">
+        <div class="text-lg font-semibold tracking-tight">ARTHUR</div>
+        <div class="text-2xs text-muted" style="letter-spacing:.12em;text-transform:uppercase" id="arthurStatus">онлайн</div>
+      </div>
+    </header>
+    <div class="flex-1 space-y-3" style="overflow-y:auto;padding:8px 16px;display:flex;flex-direction:column" id="chatBox">
+      ${state.chat.map(m=>`<div class="${m.role==='user'?'bubble-user metal':'bubble-arthur card'}">${m.text}</div>`).join('')}
+    </div>
+    <form style="padding:8px 12px 16px" id="arthurForm">
+      <div class="card flex items-end gap-2 p-2">
+        <button type="button" class="size-11 flex items-center justify-center rounded-xl" id="micBtn" aria-label="Голос">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
+        <input class="flex-1 text-sm" style="margin-bottom:8px;padding:4px 0" placeholder="Потратил 430 в кафе" id="arthurInput"/>
+        <button type="submit" class="metal pressable size-11 flex items-center justify-center rounded-xl" aria-label="Отправить">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </form>`;
+  const box=document.getElementById('chatBox');
+  box.scrollTop=box.scrollHeight;
+  document.getElementById('arthurBack').onclick=()=>{ state.arthurOpen=false; render(); };
+  document.getElementById('arthurForm').onsubmit=async(e)=>{
+    e.preventDefault();
+    const input=document.getElementById('arthurInput');
+    const msg=input.value.trim(); if(!msg) return;
+    input.value='';
+    state.chat.push({id:uid('c'),role:'user',text:msg,ts:new Date().toISOString()});
+    document.getElementById('arthurStatus').textContent='думаю';
+    const result=localArthur(msg);
+    applyEntries(result.entries);
+    state.chat.push({id:uid('c'),role:'arthur',text:result.reply,ts:new Date().toISOString()});
+    state.chat=state.chat.slice(-80);
+    save();
+    renderArthur();
+  };
+  document.getElementById('micBtn').onclick=()=>{
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR){ state.chat.push({id:uid('c'),role:'arthur',text:'Голос в этом браузере не слушается. Напиши текстом.',ts:new Date().toISOString()}); renderArthur(); return; }
+    const r=new SR(); r.lang='ru-RU'; r.continuous=false; r.interimResults=false;
+    document.getElementById('arthurStatus').textContent='слушаю';
+    r.onresult=(ev)=>{ const said=ev.results[0][0].transcript; if(said){ document.getElementById('arthurInput').value=said; document.getElementById('arthurForm').requestSubmit(); } };
+    r.onend=()=>{ document.getElementById('arthurStatus').textContent='онлайн'; };
+    r.start();
+  };
+}
+
+function renderPaywall(){
+  const el=document.getElementById('paywall');
+  if(!state.paywallOpen){ el.classList.add('hidden'); return; }
+  el.classList.remove('hidden');
+  el.innerHTML=`
+    <div class="scroll sheet-in" style="display:flex;flex-direction:column">
+      <button type="button" class="text-sm text-muted" id="closePay" style="align-self:flex-start">Закрыть</button>
+      <div class="mt-5 text-center">
+        ${markSVG()}
+        <h2 class="text-3xl font-semibold tracking-tight mt-4">ECHO Pro</h2>
+        <p class="mt-2 text-sm text-muted" style="max-width:280px;margin:8px auto 0">Бесплатного тарифа нет. Либо подписка, либо навсегда.</p>
+      </div>
+      <button type="button" class="card pressable w-full text-left p-5 mt-5" data-plan="pro">
+        <div class="kicker">Ежемесячно</div>
+        <div class="mt-2 text-2xl font-semibold">250 ₽</div>
+        <ul class="mt-3 text-2xs text-muted space-y-2" style="list-style:none;padding:0"><li>Неограниченные запросы</li><li>Полная статистика</li><li>ARTHUR с историей</li></ul>
+        <div class="metal mt-4 rounded-xl text-center text-xs font-semibold" style="padding:10px 0">${state.plan==='pro'?'Активен':'Оформить Pro'}</div>
+      </button>
+      <button type="button" class="steel pressable w-full text-left p-5 mt-3" data-plan="forever">
+        <div class="kicker">Один платёж</div>
+        <div class="mt-2 text-2xl font-semibold">2 490 ₽</div>
+        <ul class="mt-3 text-2xs text-muted" style="list-style:none;padding:0"><li>Все функции Pro навсегда</li><li>Без продлений</li></ul>
+        <div class="metal mt-4 rounded-xl text-center text-xs font-semibold" style="padding:10px 0">${state.plan==='forever'?'Активен':'Купить навсегда'}</div>
+      </button>
+      <p class="mt-5 text-center text-2xs text-faint">В Telegram — через ЮKassa / PayMaster. Здесь превью активирует тариф сразу.</p>
+    </div>`;
+  document.getElementById('closePay').onclick=()=>{ state.paywallOpen=false; render(); };
+  el.querySelectorAll('[data-plan]').forEach(b=>b.onclick=()=>{ state.plan=b.dataset.plan; state.paywallOpen=false; save(); render(); });
+}
+
+function bindMain(){
+  const main=document.getElementById('main');
+  main.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ state.tab=b.dataset.go; render(); });
+  const back=document.getElementById('backBtn');
+  if(back) back.onclick=()=>{ state.tab='digest'; render(); };
+  const logo=document.getElementById('logoBtn');
+  if(logo) logo.onclick=()=>{ state.arthurOpen=true; render(); };
+
+  // money
+  main.querySelectorAll('[data-del-exp]').forEach(b=>b.onclick=()=>{ if(confirm('Удалить?')){ state.expenses=state.expenses.filter(e=>e.id!==b.dataset.delExp); save(); render(); }});
+  const fb=document.getElementById('filterBtn');
+  if(fb) fb.onclick=()=>{
+    const order=['all','cafe','groceries','taxi','shop','sub','rent','health','other'];
+    const i=order.indexOf(state.filterMoney);
+    state.filterMoney=order[(i+1)%order.length];
+    render();
+  };
+
+  // tasks
+  const tf=document.getElementById('taskForm');
+  if(tf) tf.onsubmit=(e)=>{ e.preventDefault(); const v=document.getElementById('taskInput').value.trim(); if(!v) return; applyEntries([{kind:'task',title:v}]); render(); };
+  main.querySelectorAll('[data-tf]').forEach(b=>b.onclick=()=>{ state.filterTasks=b.dataset.tf; render(); });
+  main.querySelectorAll('[data-toggle]').forEach(b=>b.onclick=()=>{ const t=state.tasks.find(x=>x.id===b.dataset.toggle); if(t){ t.done=!t.done; save(); render(); }});
+  main.querySelectorAll('[data-del-task]').forEach(b=>b.onclick=()=>{ state.tasks=state.tasks.filter(t=>t.id!==b.dataset.delTask); save(); render(); });
+
+  // notes
+  const ns=document.getElementById('noteSave');
+  if(ns) ns.onclick=()=>{ const v=document.getElementById('noteDraft').value.trim(); if(!v) return; state.notes.unshift({id:uid('nt'),body:v,createdAt:new Date().toISOString()}); save(); render(); };
+  main.querySelectorAll('[data-del-note]').forEach(b=>b.onclick=()=>{ state.notes=state.notes.filter(n=>n.id!==b.dataset.delNote); save(); render(); });
+
+  // meetings
+  const cp=document.getElementById('calPrev');
+  if(cp) cp.onclick=()=>{ state.calCursor=new Date(state.calCursor.getFullYear(), state.calCursor.getMonth()-1, 1); render(); };
+  const cn=document.getElementById('calNext');
+  if(cn) cn.onclick=()=>{ state.calCursor=new Date(state.calCursor.getFullYear(), state.calCursor.getMonth()+1, 1); render(); };
+  main.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{ state.calPicked=b.dataset.day; render(); });
+  const mf=document.getElementById('meetForm');
+  if(mf) mf.onsubmit=(e)=>{ e.preventDefault(); const title=document.getElementById('meetTitle').value.trim(); if(!title) return; applyEntries([{kind:'meeting',title,date:state.calPicked||iso(),time:document.getElementById('meetTime').value||'21:00'}]); render(); };
+  main.querySelectorAll('[data-del-meet]').forEach(b=>b.onclick=()=>{ if(confirm('Удалить?')){ state.meetings=state.meetings.filter(m=>m.id!==b.dataset.delMeet); save(); render(); }});
+
+  // food
+  main.querySelectorAll('[data-quick-meal]').forEach(b=>b.onclick=()=>{ applyEntries([{kind:'meal',...JSON.parse(b.dataset.quickMeal)}]); render(); });
+  main.querySelectorAll('[data-del-meal]').forEach(b=>b.onclick=()=>{ if(confirm('Удалить?')){ state.meals=state.meals.filter(m=>m.id!==b.dataset.delMeal); save(); render(); }});
+
+  // settings
+  const ni=document.getElementById('nameInput');
+  if(ni) ni.onchange=()=>{ state.displayName=ni.value; save(); };
+  const bi=document.getElementById('budgetInput');
+  if(bi) bi.onchange=()=>{ state.budget=Number(bi.value)||0; save(); render(); };
+  const ci=document.getElementById('calInput');
+  if(ci) ci.onchange=()=>{ state.calorieGoal=Number(ci.value)||2500; save(); render(); };
+  const op=document.getElementById('openPaywall');
+  if(op) op.onclick=()=>{ state.paywallOpen=true; render(); };
+  const op2=document.getElementById('openPaywall2');
+  if(op2) op2.onclick=()=>{ state.paywallOpen=true; render(); };
+  const rd=document.getElementById('resetDemo');
+  if(rd) rd.onclick=()=>{ if(confirm('Вернуть демо-данные?')){ const s=buildSeed(); Object.assign(state,s); save(); render(); }};
+}
+
+function render(){
+  const map={digest:renderDigest,money:renderMoney,tasks:renderTasks,notes:renderNotes,meetings:renderMeetings,food:renderFood,settings:renderSettings};
+  document.getElementById('main').innerHTML=(map[state.tab]||renderDigest)();
+  renderDock();
+  renderArthur();
+  renderPaywall();
+  bindMain();
+}
+
+/* ========== BOOT ========== */
+try{
+  const tg=window.Telegram?.WebApp;
+  if(tg){ tg.ready(); tg.expand(); tg.setHeaderColor('#000000'); tg.setBackgroundColor('#000000');
+    if(tg.initDataUnsafe?.user?.first_name) state.displayName=tg.initDataUnsafe.user.first_name;
+  }
+}catch{}
+
+setTimeout(()=>{
+  document.getElementById('splash').classList.add('hidden');
+  render();
+}, 1600);
+</script>
+</body>
+</html>
