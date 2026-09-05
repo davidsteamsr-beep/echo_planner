@@ -278,8 +278,78 @@
       padding: 10px 14px; font-size: 14px; line-height: 1.45;
     }
     .splash {
-      position: absolute; inset: 0; z-index: 50; background: var(--bg);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      position: absolute; inset: 0; z-index: 50; background: #000;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .splash.out {
+      animation: splashOut .55s cubic-bezier(.4,0,.2,1) forwards;
+    }
+    @keyframes splashOut {
+      to { opacity: 0; transform: scale(1.06); filter: blur(8px); pointer-events: none; }
+    }
+    .splash-brand {
+      display: flex; align-items: center; gap: 18px;
+      opacity: 0;
+      transform: translateY(28px) scale(.88);
+      filter: blur(10px);
+      animation: brandIn 1.05s cubic-bezier(.16,1,.3,1) .15s forwards;
+    }
+    @keyframes brandIn {
+      to { opacity: 1; transform: none; filter: none; }
+    }
+    .splash-mark {
+      width: 56px; height: 56px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 8px 24px rgba(255,255,255,.12));
+    }
+    .splash-mark .bar {
+      transform-origin: center bottom;
+      transform: scaleY(0);
+      animation: barPop .7s cubic-bezier(.34,1.45,.64,1) forwards;
+    }
+    .splash-mark .bar:nth-child(1) { animation-delay: .25s; }
+    .splash-mark .bar:nth-child(2) { animation-delay: .38s; }
+    .splash-mark .bar:nth-child(3) { animation-delay: .5s; }
+    @keyframes barPop {
+      0% { transform: scaleY(0); opacity: 0; }
+      70% { transform: scaleY(1.08); opacity: 1; }
+      100% { transform: scaleY(1); opacity: 1; }
+    }
+    .splash-word {
+      display: flex; flex-direction: column; line-height: .95;
+      opacity: 0;
+      transform: translateX(18px);
+      animation: wordIn .85s cubic-bezier(.16,1,.3,1) .55s forwards;
+    }
+    @keyframes wordIn {
+      to { opacity: 1; transform: none; }
+    }
+    .splash-word .line1,
+    .splash-word .line2 {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      background: linear-gradient(175deg, #ffffff 0%, #c8c8c8 28%, #f0f0f0 48%, #8a8a8a 62%, #d8d8d8 82%, #a0a0a0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 8px rgba(255,255,255,.08));
+    }
+    .splash-word .line2 {
+      font-weight: 400;
+      opacity: .92;
+    }
+    .splash-shine {
+      position: absolute; inset: -20%;
+      background: radial-gradient(ellipse 50% 40% at 50% 50%, rgba(255,255,255,.07), transparent 60%);
+      pointer-events: none;
+      animation: shinePulse 2s ease-in-out infinite;
+    }
+    @keyframes shinePulse {
+      0%, 100% { opacity: .5; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
     }
     .hidden { display: none !important; }
     .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -328,21 +398,36 @@
   <div class="stage">
     <div class="phone" id="app">
       <div class="splash" id="splash">
-        <svg width="72" height="72" viewBox="0 0 64 64" aria-hidden="true">
-          <defs>
-            <linearGradient id="m" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#f4f4f4"/><stop offset="0.28" stop-color="#9a9a9a"/>
-              <stop offset="0.5" stop-color="#ececec"/><stop offset="0.78" stop-color="#6e6e6e"/>
-              <stop offset="1" stop-color="#d8d8d8"/>
-            </linearGradient>
-          </defs>
-          <rect x="6" y="32" width="14" height="26" rx="4" fill="url(#m)"/>
-          <rect x="25" y="6" width="14" height="52" rx="4" fill="url(#m)"/>
-          <rect x="44" y="18" width="14" height="40" rx="4" fill="url(#m)"/>
-        </svg>
-        <div class="mt-3 text-center">
-          <div class="text-2xl font-semibold tracking-tight">Echo</div>
-          <div class="text-2xl" style="font-weight:300;color:var(--metal)">Planner</div>
+        <div class="splash-shine"></div>
+        <div class="splash-brand">
+          <svg class="splash-mark" viewBox="0 0 64 64" aria-hidden="true">
+            <defs>
+              <linearGradient id="splashMetal" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#f7f7f7"/>
+                <stop offset="0.22" stop-color="#a8a8a8"/>
+                <stop offset="0.45" stop-color="#efefef"/>
+                <stop offset="0.7" stop-color="#6e6e6e"/>
+                <stop offset="1" stop-color="#d4d4d4"/>
+              </linearGradient>
+              <linearGradient id="splashMetal2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ffffff"/>
+                <stop offset="0.35" stop-color="#9a9a9a"/>
+                <stop offset="0.55" stop-color="#ececec"/>
+                <stop offset="1" stop-color="#7a7a7a"/>
+              </linearGradient>
+              <filter id="splashGrain">
+                <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="noise"/>
+                <feBlend in="SourceGraphic" in2="noise" mode="overlay"/>
+              </filter>
+            </defs>
+            <rect class="bar" x="6" y="32" width="14" height="26" rx="3.5" fill="url(#splashMetal)"/>
+            <rect class="bar" x="25" y="6" width="14" height="52" rx="3.5" fill="url(#splashMetal2)"/>
+            <rect class="bar" x="44" y="18" width="14" height="40" rx="3.5" fill="url(#splashMetal)"/>
+          </svg>
+          <div class="splash-word">
+            <span class="line1">Echo</span>
+            <span class="line2">Planner</span>
+          </div>
         </div>
       </div>
       <main class="scroll" id="main"></main>
@@ -1374,9 +1459,11 @@ try{
 }catch{}
 
 setTimeout(()=>{
-  document.getElementById('splash').classList.add('hidden');
+  const splash = document.getElementById('splash');
+  splash.classList.add('out');
   fullRender();
-}, 1400);
+  setTimeout(()=> splash.classList.add('hidden'), 560);
+}, 2200);
 </script>
 </body>
 </html>
