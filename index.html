@@ -480,6 +480,15 @@ function gateMessage(sub) {
       hint: 'Нажмите на юзернейм, чтобы скопировать',
     };
   }
+  if (sub.authError) {
+    return {
+      icon: '🔒',
+      title: 'Нет доступа',
+      text: 'Не удалось подтвердить вход Telegram. Откройте приложение через кнопку в боте @Echo_Planner_bot.',
+      copy: false,
+      hint: '',
+    };
+  }
   if (r === 'trial_ended') {
     return {
       icon: '⌛',
@@ -544,26 +553,39 @@ function hideGate() {
 async function fetchSubscription() {
   const tg = window.Telegram?.WebApp;
   const initData = tg?.initData || '';
-  // Вне Telegram (браузер) — только для разработки; на проде WebApp обязан
   if (!initData) {
-    // dev escape: local preview
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
       return { active: true, ok: true, type: 'dev', reason: null };
     }
+    // Открыто не из Telegram WebApp — initData нет
     return { active: false, ok: false, reason: 'no_plan', serverError: false };
   }
   try {
+    // сначала лёгкий ping (поднимет cold start Render)
+    try {
+      await fetch(API_BASE + '/api/ping', { method: 'GET', mode: 'cors' });
+    } catch (_) {}
+
     const res = await fetch(API_BASE + '/api/me', {
-      headers: { 'X-Telegram-Init-Data': initData },
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'X-Telegram-Init-Data': initData,
+        'Accept': 'application/json',
+      },
     });
+    if (res.status === 401) {
+      // подпись initData не сошлась или BOT_TOKEN другой
+      return { active: false, ok: false, reason: 'no_plan', authError: true };
+    }
     if (!res.ok) {
-      if (res.status >= 500) return { active: false, ok: false, serverError: true };
-      return { active: false, ok: false, reason: 'no_plan' };
+      return { active: false, ok: false, serverError: true, http: res.status };
     }
     const data = await res.json();
     return data.subscription || { active: false, ok: false, reason: 'no_plan' };
   } catch (e) {
-    return { active: false, ok: false, serverError: true };
+    console.error('fetchSubscription', e);
+    return { active: false, ok: false, serverError: true, err: String(e && e.message || e) };
   }
 }
 
