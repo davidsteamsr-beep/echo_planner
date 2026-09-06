@@ -7,3 +7,5 @@ aiofiles
 uvicorn
 fastapi
 python-multipart
+aiosqlite
+asyncpg
