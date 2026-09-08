@@ -131,7 +131,7 @@ GUIDES_TEXT = """Action Button — эксклюзивная фишка iPhone 15
 
 Перед просмотром гайда: установите приложение на iphone - команды
 
-ЯРЛЫК >> https://www.icloud.com/shortcuts/1303906967ba4d3d9f2299032bfaa80e """
+ЯРЛЫК >> https://www.icloud.com/shortcuts/688ab135030b45acb928013dd360f593 """
 
 
 async def send_guides_screen(target_message: Message):
