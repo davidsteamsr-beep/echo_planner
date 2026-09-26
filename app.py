@@ -545,6 +545,60 @@ async def cabinet_traffers_add(
     return item
 
 
+
+@app.get("/api/channel/status")
+async def api_channel_status(
+    request: Request,
+    x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
+):
+    """Подписан ли пользователь на канал (бот должен быть админом канала)."""
+    from bot.config import CHANNEL_URL, CHANNEL_USERNAME
+    from bot import channel as ch
+
+    init_data = x_telegram_init_data or request.headers.get("x-telegram-init-data") or ""
+    user = validate_init_data(init_data)
+    if not user or not user.get("id"):
+        # без initData — показываем промо (не confim subscribed)
+        return {
+            "subscribed": False,
+            "channel_url": CHANNEL_URL,
+            "channel_username": CHANNEL_USERNAME,
+            "show_promo": True,
+        }
+    uid = int(user["id"])
+    bot, _ = await get_bot()
+    joined = await ch.is_channel_member(bot, uid, use_cache=True)
+    return {
+        "subscribed": joined,
+        "channel_url": CHANNEL_URL,
+        "channel_username": CHANNEL_USERNAME,
+        "show_promo": not joined,
+    }
+
+
+@app.post("/api/channel/refresh")
+async def api_channel_refresh(
+    request: Request,
+    x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
+):
+    from bot.config import CHANNEL_URL, CHANNEL_USERNAME
+    from bot import channel as ch
+
+    init_data = x_telegram_init_data or request.headers.get("x-telegram-init-data") or ""
+    user = validate_init_data(init_data)
+    if not user or not user.get("id"):
+        raise HTTPException(401, "invalid_init_data")
+    uid = int(user["id"])
+    bot, _ = await get_bot()
+    joined = await ch.is_channel_member(bot, uid, use_cache=False)
+    return {
+        "subscribed": joined,
+        "channel_url": CHANNEL_URL,
+        "channel_username": CHANNEL_USERNAME,
+        "show_promo": not joined,
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
 
