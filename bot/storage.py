@@ -56,7 +56,11 @@ def _default_user() -> dict:
         "first_name": None,
         "referred_by": None,  # traffer code
         "role": "user",  # user | traffer | owner
-        "payments": [],  # [{type, amount_rub, at, payment_id}]
+        "payments": [],
+        "channel_promo_at": None,
+        "channel_member_cached": None,
+        "channel_member_at": None,
+  # [{type, amount_rub, at, payment_id}]
 
     }
 

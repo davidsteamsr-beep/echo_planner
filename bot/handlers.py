@@ -527,6 +527,45 @@ def _format_section_reply(lines_by_section: dict) -> str:
     return "\n\n".join(blocks)
 
 
+
+
+async def maybe_channel_promo(message: Message, bot: Bot) -> None:
+    """Случайное напоминание о канале, если пользователь не подписан."""
+    try:
+        from . import channel as ch
+        from .config import CHANNEL_URL, CHANNEL_USERNAME
+
+        uid = message.from_user.id
+        if not await ch.should_send_promo(uid):
+            return
+        if await ch.is_channel_member(bot, uid):
+            return
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="Подписаться на канал", url=CHANNEL_URL)],
+        ])
+        photo = ASSETS_DIR / "channel.png"
+        caption = (
+            "ECHO Planner Channel\n\n"
+            "Анонсы, обновления и идеи продукта — в одном месте.\n"
+            f"@{CHANNEL_USERNAME}"
+        )
+        # real newlines:
+        caption = (
+            "ECHO Planner Channel"
+            + chr(10) + chr(10)
+            + "Анонсы, обновления и идеи продукта — в одном месте."
+            + chr(10)
+            + f"@{CHANNEL_USERNAME}"
+        )
+        if photo.exists():
+            await message.answer_photo(FSInputFile(photo), caption=caption, reply_markup=kb)
+        else:
+            await message.answer(caption, reply_markup=kb)
+        await ch.mark_promo_sent(uid)
+    except Exception:
+        pass
+
+
 @router.message(F.text)
 async def handle_note(message: Message, bot: Bot):
     if message.text and message.text.startswith("/"):
@@ -552,6 +591,7 @@ async def handle_note(message: Message, bot: Bot):
     head = (result.get("reply") or "Записал.").strip()
     body = _format_section_reply(lines_by_section)
     await wait.edit_text(head + "\n\n" + body, reply_markup=app_kb())
+    await maybe_channel_promo(message, bot)
 
 
 @router.message(F.web_app_data)

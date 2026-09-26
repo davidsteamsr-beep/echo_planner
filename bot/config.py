@@ -37,3 +37,11 @@ OWNER_USERNAME = (os.getenv("OWNER_USERNAME") or "dvvsww").lstrip("@").lower()
 # Выплаты траферу, ₽
 TRAFFER_PAY_MONTHLY = int(os.getenv("TRAFFER_PAY_MONTHLY", "100"))
 TRAFFER_PAY_LIFETIME = int(os.getenv("TRAFFER_PAY_LIFETIME", "1100"))
+
+
+# Telegram-канал продукта
+CHANNEL_USERNAME = (os.getenv("CHANNEL_USERNAME") or "EchoPlanner_Channel").lstrip("@")
+CHANNEL_URL = os.getenv("CHANNEL_URL") or f"https://t.me/{CHANNEL_USERNAME}"
+# Как часто можно слать напоминание (часов)
+CHANNEL_PROMO_COOLDOWN_H = int(os.getenv("CHANNEL_PROMO_COOLDOWN_H", "36"))
+CHANNEL_PROMO_CHANCE = float(os.getenv("CHANNEL_PROMO_CHANCE", "0.22"))
