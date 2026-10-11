@@ -589,21 +589,28 @@ async def ensure_partner_benefits(user_id: int, username: str | None = None) -> 
     tr = None
     if uname:
         tr = await get_traffer_by_username(uname)
-    if not tr and data.get("role") == "traffer":
-        # already traffer
-        pass
-    elif tr:
+    if tr:
         data["role"] = "traffer"
         data["traffer_code"] = tr.get("code")
         data["username"] = uname or data.get("username")
-    else:
-        return data
-
-    if data.get("role") == "traffer":
         sub = data.setdefault("subscription", {})
         sub["active"] = True
         sub["type"] = "lifetime"
         sub["until"] = None
+        await save_user(user_id, data)
+        return data
+
+    # был партнёром, но отключён — забираем кабинет и безлимит
+    if data.get("role") == "traffer":
+        data["role"] = "user"
+        code_old = data.get("traffer_code")
+        data["traffer_code"] = None
+        sub = data.setdefault("subscription", {})
+        paid_life = any(p.get("type") == "lifetime" for p in (data.get("payments") or []))
+        if sub.get("type") == "lifetime" and not paid_life:
+            sub["active"] = False
+            sub["type"] = None
+            sub["until"] = None
         await save_user(user_id, data)
     return data
 
@@ -615,8 +622,7 @@ async def set_referred_by(user_id: int, code: str) -> bool:
         return False
     if data.get("role") in ("owner", "traffer"):
         return False
-    meta = await _load_meta()
-    codes = {t.get("code") for t in meta.get("traffers") or []}
+    codes = {t.get("code") for t in await list_traffers(include_disabled=False)}
     if code not in codes:
         return False
     data["referred_by"] = code
@@ -657,17 +663,70 @@ async def add_traffer(username: str, name: str) -> dict:
     return item
 
 
-async def list_traffers() -> list[dict]:
+async def list_traffers(include_disabled: bool = False) -> list[dict]:
     meta = await _load_meta()
-    return list(meta.get("traffers") or [])
+    items = list(meta.get("traffers") or [])
+    if include_disabled:
+        return items
+    return [t for t in items if not t.get("disabled")]
 
 
 async def get_traffer_by_username(username: str) -> dict | None:
     username = (username or "").lstrip("@").lower()
-    for t in await list_traffers():
+    for t in await list_traffers(include_disabled=False):
         if (t.get("username") or "").lower() == username:
             return t
     return None
+
+
+async def get_traffer_by_code(code: str, include_disabled: bool = False) -> dict | None:
+    code = (code or "").strip()
+    for t in await list_traffers(include_disabled=include_disabled):
+        if t.get("code") == code:
+            return t
+    return None
+
+
+async def disable_traffer(code: str) -> dict:
+    """Отключить партнёра: рефка мёртвая, role user, lifetime снят (если был партнёрский)."""
+    meta = await _load_meta()
+    found = None
+    for t in meta.get("traffers") or []:
+        if t.get("code") == code:
+            t["disabled"] = True
+            t["disabled_at"] = datetime.utcnow().isoformat()
+            found = t
+            break
+    if not found:
+        raise ValueError("traffer_not_found")
+    await _save_meta(meta)
+
+    username = (found.get("username") or "").lower()
+    for uid, d in await list_all_users():
+        is_partner = (d.get("traffer_code") == code) or (
+            (d.get("username") or "").lower() == username and d.get("role") == "traffer"
+        )
+        if not is_partner:
+            continue
+        d["role"] = "user"
+        d["traffer_code"] = None
+        sub = d.setdefault("subscription", {})
+        # снимаем безлимит партнёра; trial_used сохраняем
+        if sub.get("type") == "lifetime" and not d.get("payments"):
+            # pure partner lifetime without real payment
+            sub["active"] = False
+            sub["type"] = None
+            sub["until"] = None
+        elif sub.get("type") == "lifetime":
+            # был lifetime от оплаты — оставляем; если только партнёрский флаг — всё равно снимаем
+            # партнёрский lifetime не пишется в payments обычно
+            paid_life = any(p.get("type") == "lifetime" for p in (d.get("payments") or []))
+            if not paid_life:
+                sub["active"] = False
+                sub["type"] = None
+                sub["until"] = None
+        await save_user(uid, d)
+    return found
 
 
 async def record_payment(user_id: int, pay_type: str, payment_id: str | None = None) -> None:
