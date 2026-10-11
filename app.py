@@ -599,6 +599,57 @@ async def api_channel_refresh(
     }
 
 
+
+@app.get("/api/cabinet/traffers/{code}")
+async def cabinet_traffer_detail(
+    code: str,
+    request: Request,
+    x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
+):
+    from bot import storage
+    from bot.config import BOT_USERNAME
+
+    tg = _init_user_from_header(request, x_telegram_init_data)
+    data = await storage.load_user(int(tg["id"]))
+    if data.get("role") != "owner":
+        raise HTTPException(403, "owner_only")
+    tr = await storage.get_traffer_by_code(code, include_disabled=True)
+    if not tr:
+        raise HTTPException(404, "not_found")
+    st = await storage.traffer_stats(code)
+    return {
+        **tr,
+        "earned": st["earned"],
+        "users_count": st["total"],
+        "trial": st["trial"],
+        "monthly": st["monthly"],
+        "lifetime": st["lifetime"],
+        "users": st["users"],
+        "ref_link": f"https://t.me/{BOT_USERNAME}?start=ref_{code}",
+        "bot_username": BOT_USERNAME,
+        "active": not tr.get("disabled"),
+    }
+
+
+@app.post("/api/cabinet/traffers/{code}/disable")
+async def cabinet_traffer_disable(
+    code: str,
+    request: Request,
+    x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
+):
+    from bot import storage
+
+    tg = _init_user_from_header(request, x_telegram_init_data)
+    data = await storage.load_user(int(tg["id"]))
+    if data.get("role") != "owner":
+        raise HTTPException(403, "owner_only")
+    try:
+        item = await storage.disable_traffer(code)
+    except ValueError:
+        raise HTTPException(404, "not_found")
+    return {"ok": True, "code": code, "disabled": True, "username": item.get("username")}
+
+
 if __name__ == "__main__":
     import uvicorn
 
