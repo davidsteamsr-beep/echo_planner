@@ -646,6 +646,27 @@
       box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 2px 8px rgba(0,0,0,.35);
     }
 
+
+    .cab-x {
+      width: 32px; height: 32px; border-radius: 10px;
+      display: grid; place-items: center; flex-shrink: 0;
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.08);
+      transition: background .2s ease, transform .15s ease;
+    }
+    .cab-x:active { transform: scale(0.92); background: rgba(255,80,80,.12); }
+    .cab-x svg { width: 14px; height: 14px; }
+    .cab-disable {
+      width: 100%; margin-top: 20px; padding: 14px 16px;
+      border-radius: 14px; font-size: 14px; font-weight: 600;
+      letter-spacing: 0.02em;
+      color: #ffb4b4;
+      background: linear-gradient(165deg, rgba(80,20,20,.5), rgba(30,10,10,.8));
+      box-shadow: 0 0 0 1px rgba(255,100,100,.2), inset 0 1px 0 rgba(255,255,255,.04);
+      transition: transform .15s ease, opacity .2s ease;
+    }
+    .cab-disable:active { transform: scale(0.98); opacity: .85; }
+
     .hidden { display: none !important; }
     .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .flex { display: flex; }
@@ -1115,7 +1136,7 @@ function save(){
 
 const _loaded=load();
 ['expenses','meetings','tasks','meals','notes','chat'].forEach(k=>{ if(!Array.isArray(_loaded[k])) _loaded[k]=[]; });
-let state={..._loaded, tab:'digest', arthurOpen:false, paywallOpen:false, cabinetOpen:false, cabinetView:'home', cabinetFilter:'all', cabinetUsers:[], cabinetDetail:null, cabinetData:null, filterMoney:'all', filterTasks:'all', calCursor:new Date(), calPicked:iso()};
+let state={..._loaded, tab:'digest', arthurOpen:false, paywallOpen:false, cabinetOpen:false, cabinetView:'home', cabinetFilter:'all', cabinetUsers:[], cabinetDetail:null, cabinetPartner:null, cabinetData:null, filterMoney:'all', filterTasks:'all', calCursor:new Date(), calPicked:iso()};
 
 function markSVG(size=28, inverted=false){
   const g=inverted
@@ -2153,6 +2174,66 @@ function renderCabinet() {
     return;
   }
 
+
+  if (state.cabinetView === 'partner' && state.cabinetPartner) {
+    const tr = state.cabinetPartner;
+    const users = tr.users || [];
+    el.innerHTML = `<div class="scroll p-4">
+      <div class="flex items-center justify-between mb-4 cab-anim">
+        <button type="button" id="cabBack" class="text-sm text-muted">← Назад</button>
+        <button type="button" class="cab-x pressable" id="partnerClose" aria-label="Закрыть">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+            <path d="M6 6l12 12M18 6L6 18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="cab-anim" style="animation-delay:.05s">
+        <div class="text-2xl font-semibold" style="background:linear-gradient(180deg,#fff,#999);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${tr.name || tr.username}</div>
+        <div class="text-sm text-muted mt-1">@${tr.username} · код ${tr.code}</div>
+      </div>
+      <div class="flex gap-2 mt-4 mb-4">
+        <div class="cab-stat cab-anim" style="animation-delay:.1s"><div class="n">${tr.users_count||0}</div><div class="l">Юзеры</div></div>
+        <div class="cab-stat cab-anim" style="animation-delay:.16s"><div class="n">${tr.earned||0}</div><div class="l">₽</div></div>
+        <div class="cab-stat cab-anim" style="animation-delay:.22s"><div class="n">${tr.monthly||0}</div><div class="l">Pro</div></div>
+        <div class="cab-stat cab-anim" style="animation-delay:.28s"><div class="n">${tr.lifetime||0}</div><div class="l">∞</div></div>
+      </div>
+      <div class="card p-4 mb-3 cab-anim" style="animation-delay:.32s">
+        <div class="kicker">Реф-ссылка</div>
+        <div class="text-2xs text-muted mt-2 break-all">${tr.ref_link || ''}</div>
+        <button type="button" class="steel pressable w-full mt-3 py-2 text-sm font-semibold" id="copyPartnerRef">Скопировать</button>
+      </div>
+      <div class="kicker mb-2 cab-anim" style="animation-delay:.36s">Клиенты · ${users.length}</div>
+      ${users.slice(0,40).map((u,i) => `
+        <div class="user-row" style="animation-delay:${0.38+i*0.03}s">
+          <div style="flex:1;min-width:0">
+            <div class="text-sm font-semibold truncate">${u.first_name || '—'} ${u.username ? '@'+u.username : ''}</div>
+            <div class="text-2xs text-muted">${u.subscription?.type || 'нет'} · id ${u.id}</div>
+          </div>
+        </div>`).join('') || '<div class="text-muted text-sm mb-3">Пока нет</div>'}
+      <button type="button" class="cab-disable pressable cab-anim" style="animation-delay:.5s" id="disablePartner">Отключить</button>
+      <div class="text-2xs text-muted text-center mt-2 mb-6 cab-anim" style="animation-delay:.55s">Снимет безлимит, кабинет и остановит рефку</div>
+    </div>`;
+    const goHome = () => { state.cabinetView = 'home'; state.cabinetPartner = null; fullRender(); };
+    document.getElementById('cabBack').onclick = goHome;
+    document.getElementById('partnerClose').onclick = goHome;
+    document.getElementById('copyPartnerRef')?.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(tr.ref_link || ''); alert('Скопировано'); } catch(e) { prompt('Ссылка', tr.ref_link); }
+    });
+    document.getElementById('disablePartner')?.addEventListener('click', async () => {
+      if (!confirm('Отключить партнёра @' + tr.username + '?\nРефка перестанет работать, безлимит и кабинет снимутся.')) return;
+      try {
+        await apiCab('/api/cabinet/traffers/' + encodeURIComponent(tr.code) + '/disable', { method: 'POST', body: {} });
+        state.cabinetData = await apiCab('/api/cabinet/overview');
+        state.cabinetView = 'home';
+        state.cabinetPartner = null;
+        fullRender();
+      } catch (e) {
+        alert('Не удалось отключить');
+      }
+    });
+    return;
+  }
+
   // home
   const ov = d.overview || {};
   const isOwner = d.role === 'owner';
@@ -2174,16 +2255,15 @@ function renderCabinet() {
       <button type="button" class="steel pressable w-full mt-2 py-2 text-sm font-semibold" id="copyRef">Скопировать ссылку</button>` : ''}
     </div>` : ''}
     ${isOwner ? `
-    <div class="kicker mb-2">Партнёры</div>
+    <div class="kicker mb-2 cab-anim" style="animation-delay:.28s">Партнёры</div>
     ${(d.traffers||[]).map((tr,i) => `
-      <div class="user-row" style="animation-delay:${0.3+i*0.06}s">
+      <button type="button" class="user-row pressable w-full text-left" style="animation-delay:${0.3+i*0.06}s" data-partner="${tr.code}">
         <div style="flex:1;min-width:0">
           <div class="text-sm font-semibold">${tr.name || tr.username}</div>
           <div class="text-2xs text-muted">@${tr.username} · ${tr.users_count||0} юзеров · ${tr.earned||0}₽</div>
-          <div class="text-2xs text-muted mt-1 break-all">https://t.me/${d.bot_username||'Echo_Planner_bot'}?start=ref_${tr.code}</div>
         </div>
-        <button type="button" class="text-2xs pressable" data-copy="${tr.code}" style="padding:8px">копир.</button>
-      </div>`).join('') || '<div class="text-muted text-sm mb-3">Пока нет</div>'}
+        <div class="text-muted">›</div>
+      </button>`).join('') || '<div class="text-muted text-sm mb-3">Пока нет</div>'}
     <button type="button" class="card pressable w-full text-center p-4 mb-4 cab-anim" style="animation-delay:.45s" id="addTraffer">
       <span style="font-size:20px">＋</span>
       <div class="text-sm font-semibold mt-1">Добавить партнёра</div>
@@ -2229,9 +2309,14 @@ function renderCabinet() {
         fullRender();
       } catch(e) { alert('Ошибка добавления'); }
     });
-    el.querySelectorAll('[data-copy]').forEach(b => b.onclick = async () => {
-      const link = `https://t.me/${d.bot_username||'Echo_Planner_bot'}?start=ref_${b.dataset.copy}`;
-      try { await navigator.clipboard.writeText(link); b.textContent='ok'; } catch(e) { prompt('Ссылка', link); }
+    el.querySelectorAll('[data-partner]').forEach(b => b.onclick = async () => {
+      try {
+        state.cabinetPartner = await apiCab('/api/cabinet/traffers/' + encodeURIComponent(b.dataset.partner));
+        state.cabinetView = 'partner';
+        fullRender();
+      } catch (e) {
+        alert('Не удалось открыть партнёра');
+      }
     });
   } else {
     document.getElementById('copyRef')?.addEventListener('click', async () => {
