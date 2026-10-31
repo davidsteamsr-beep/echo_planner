@@ -3025,17 +3025,36 @@ function renderPaywall(){
 async function apiCab(path, opts) {
   const tg = window.Telegram?.WebApp;
   const initData = tg?.initData || '';
-  const res = await fetch(API_BASE + path, {
-    method: (opts && opts.method) || 'GET',
-    mode: 'cors',
-    headers: {
-      'X-Telegram-Init-Data': initData,
-      'Accept': 'application/json',
-      ...((opts && opts.body) ? {'Content-Type': 'application/json'} : {}),
-    },
-    body: opts && opts.body ? JSON.stringify(opts.body) : undefined,
-  });
-  if (!res.ok) throw new Error('api ' + res.status);
+  let res;
+  try {
+    res = await fetch(API_BASE + path, {
+      method: (opts && opts.method) || 'GET',
+      mode: 'cors',
+      headers: {
+        'X-Telegram-Init-Data': initData,
+        'Accept': 'application/json',
+        ...((opts && opts.body) ? {'Content-Type': 'application/json'} : {}),
+      },
+      body: opts && opts.body ? JSON.stringify(opts.body) : undefined,
+    });
+  } catch (netErr) {
+    const err = new Error('network');
+    err.status = 0;
+    err.detail = 'network';
+    throw err;
+  }
+  if (!res.ok) {
+    let detail = '';
+    try {
+      const body = await res.json();
+      detail = body?.detail || body?.message || '';
+      if (typeof detail !== 'string') detail = JSON.stringify(detail);
+    } catch (e) {}
+    const err = new Error('api ' + res.status);
+    err.status = res.status;
+    err.detail = detail;
+    throw err;
+  }
   return res.json();
 }
 
@@ -3112,8 +3131,8 @@ async function openCabinet() {
   try {
     state.cabinetData = await apiCab('/api/cabinet/overview');
   } catch (e) {
-    console.error(e);
-    state.cabinetData = { error: true };
+    console.error('cabinet overview failed', e && e.status, e && e.detail);
+    state.cabinetData = { error: true, status: e && e.status, detail: e && e.detail };
   }
   fullRender();
 }
@@ -3168,12 +3187,31 @@ function renderCabinet() {
 
   /* error */
   if (d.error) {
+    const hasInit = !!(window.Telegram?.WebApp?.initData);
+    let title = 'Кабинет недоступен';
+    let text = 'Этот раздел открыт владельцу и партнёрам. Проверьте, что аккаунт привязан в боте.';
+    if (d.status === 0) {
+      title = 'Сервер не отвечает';
+      text = 'Не удалось связаться с сервером. Проверьте интернет и попробуйте ещё раз.';
+    } else if (d.status === 401) {
+      title = 'Не удалось проверить аккаунт';
+      text = hasInit
+        ? 'Telegram передал устаревшие или неверные данные. Закройте и откройте мини-приложение заново кнопкой из бота.'
+        : 'Мини-приложение открыто вне Telegram. Откройте его кнопкой из бота — без этого кабинет недоступен.';
+    } else if (d.status === 403) {
+      title = 'Кабинет недоступен';
+      text = d.detail === 'not_traffer'
+        ? 'Партнёрский доступ не найден. Проверьте, что ваш @username указан в списке партнёров.'
+        : 'Этот раздел открыт владельцу и партнёрам. Проверьте, что аккаунт привязан в боте.';
+    }
+    const code = d.status ? `<div class="text-2xs text-faint mt-3">код ${d.status}${d.detail ? ' · ' + escHtml(String(d.detail)) : ''}</div>` : '';
     el.innerHTML = `<div class="scroll">
       ${cabHead('Кабинет','Доступ')}
       <div class="cab-empty" style="margin-top:8px">
         <div class="cab-ava" style="margin:0 auto 14px">?</div>
-        <div class="text-lg font-semibold" style="color:var(--fg)">Кабинет недоступен</div>
-        <div class="mt-2">Этот раздел открыт владельцу и партнёрам. Проверьте, что аккаунт привязан в боте.</div>
+        <div class="text-lg font-semibold" style="color:var(--fg)">${title}</div>
+        <div class="mt-2">${text}</div>
+        ${code}
         <button type="button" class="steel pressable w-full py-3 text-sm font-semibold mt-4" id="cabRetry">Попробовать снова</button>
       </div>
     </div>`;

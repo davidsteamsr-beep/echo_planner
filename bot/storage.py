@@ -566,13 +566,17 @@ async def update_profile(user_id: int, username: str | None, first_name: str | N
 
 
 async def ensure_owner(user_id: int, username: str | None) -> dict:
-    """Если username владельца — lifetime + role owner."""
-    from .config import OWNER_USERNAME
+    """Если username владельца или ADMIN_ID — lifetime + role owner."""
+    from .config import ADMIN_ID, OWNER_USERNAME
     data = await load_user(user_id)
     uname = (username or data.get("username") or "").lstrip("@").lower()
-    if uname and uname == OWNER_USERNAME.lower():
+    is_owner = bool(uname) and uname == OWNER_USERNAME.lower()
+    if ADMIN_ID and int(user_id) == int(ADMIN_ID):
+        is_owner = True
+    if is_owner:
         data["role"] = "owner"
-        data["username"] = uname
+        if uname:
+            data["username"] = uname
         sub = data.setdefault("subscription", {})
         sub["active"] = True
         sub["type"] = "lifetime"
