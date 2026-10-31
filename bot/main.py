@@ -1,19 +1,21 @@
 import os
 from threading import Thread
 
-from flask import Flask
-
-app = Flask(__name__)
-
-
-@app.route("/")
-def health():
-    return "Bot is running", 200
+# API и polling живут в одном Render Web Service.
+# В режиме polling вебхук не ставим, иначе Telegram перестанет отдавать updates.
+os.environ.setdefault("BOT_POLLING_MODE", "1")
 
 
 def run_server():
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    """FastAPI (мини-аппа + кабинет) на том же порту, что требует Render."""
+    import uvicorn
+
+    uvicorn.run(
+        "app:app",
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 10000)),
+        log_level="info",
+    )
 
 
 Thread(target=run_server, daemon=True).start()

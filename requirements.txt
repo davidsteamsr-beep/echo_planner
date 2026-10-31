@@ -6,7 +6,6 @@ pydantic
 aiofiles
 uvicorn
 fastapi
-Flask
 python-multipart
 aiosqlite
 asyncpg

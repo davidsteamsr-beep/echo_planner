@@ -13,7 +13,7 @@ ADMIN_ID = int(os.getenv("ADMIN_ID", "0") or 0)
 
 WEBAPP_URL = os.getenv("WEBAPP_URL") or os.getenv("MINI_APP_URL") or "https://davidsteamsr-beep.github.io/echo_planner/"
 BOT_USERNAME = os.getenv("BOT_USERNAME", "Echo_Planner_bot")
-API_PUBLIC_URL = os.getenv("API_PUBLIC_URL") or os.getenv("RENDER_EXTERNAL_URL") or "https://echo-planner-ppeb.onrender.com"
+API_PUBLIC_URL = os.getenv("API_PUBLIC_URL") or os.getenv("RENDER_EXTERNAL_URL") or "https://echo-planner-y4io.onrender.com"
 
 PAYMENT_PROVIDER_TOKEN = os.getenv("PAYMENT_PROVIDER_TOKEN", "")
 YOOKASSA_SHOP_ID = os.getenv("YOOKASSA_SHOP_ID", "")

@@ -38,7 +38,7 @@ def _public_base() -> str:
         os.getenv("RENDER_EXTERNAL_URL")
         or os.getenv("WEBHOOK_HOST")
         or os.getenv("API_PUBLIC_URL")
-        or "https://echo-planner-ppeb.onrender.com"
+        or "https://echo-planner-y4io.onrender.com"
     ).rstrip("/")
 
 
@@ -96,6 +96,9 @@ async def get_bot():
 async def _ensure_webhook() -> None:
     global _webhook_set
     if _webhook_set:
+        return
+    if os.getenv("BOT_POLLING_MODE") == "1":
+        logger.info("Polling mode — webhook disabled")
         return
     base = _public_base()
     if not base:
