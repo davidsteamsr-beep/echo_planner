@@ -1562,11 +1562,11 @@ function gateMessage(sub) {
   const r = sub && sub.reason;
   if (!sub || sub.serverError) {
     return {
-      icon: '⚠️',
-      title: 'Сервер недоступен',
-      text: 'Не удалось проверить подписку. Напишите @dvvsww',
+      icon: '⏳',
+      title: 'Сервер просыпается',
+      text: 'После простоя Render запускает сервис до минуты. Подождите и откройте приложение ещё раз.',
       copy: true,
-      hint: 'Нажмите на юзернейм, чтобы скопировать',
+      hint: 'Если не помогает — напишите @dvvsww',
     };
   }
   if (sub.authError) {
@@ -1786,22 +1786,39 @@ async function fetchSubscription() {
     // Вне Telegram — пускаем в UI (иначе серый экран при открытии в браузере)
     return { active: true, ok: true, type: 'preview', reason: null };
   }
-  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-  const timer = ctrl ? setTimeout(() => ctrl.abort(), 12000) : null;
-  try {
+  // Render free может просыпаться до минуты: ждём до 60с и пробуем дважды
+  let res = null;
+  let lastErr = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = ctrl ? setTimeout(() => ctrl.abort(), 60000) : null;
     try {
-      await fetch(API_BASE + '/api/ping', { method: 'GET', mode: 'cors', signal: ctrl?.signal });
-    } catch (_) {}
-
-    const res = await fetch(API_BASE + '/api/me', {
-      method: 'GET',
-      mode: 'cors',
-      signal: ctrl?.signal,
-      headers: {
-        'X-Telegram-Init-Data': initData,
-        'Accept': 'application/json',
-      },
-    });
+      try {
+        await fetch(API_BASE + '/api/ping', { method: 'GET', mode: 'cors', cache: 'no-store', signal: ctrl?.signal });
+      } catch (_) {}
+      res = await fetch(API_BASE + '/api/me', {
+        method: 'GET',
+        mode: 'cors',
+        cache: 'no-store',
+        signal: ctrl?.signal,
+        headers: {
+          'X-Telegram-Init-Data': initData,
+          'Accept': 'application/json',
+        },
+      });
+      break;
+    } catch (e) {
+      lastErr = e;
+      if (attempt === 0) await new Promise(r => setTimeout(r, 2000));
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  }
+  if (!res) {
+    console.error('fetchSubscription', lastErr);
+    return { active: false, ok: false, serverError: true, err: String((lastErr && lastErr.message) || lastErr) };
+  }
+  try {
     if (res.status === 401) {
       return { active: false, ok: false, reason: 'no_plan', authError: true };
     }
@@ -1814,8 +1831,6 @@ async function fetchSubscription() {
   } catch (e) {
     console.error('fetchSubscription', e);
     return { active: false, ok: false, serverError: true, err: String(e && e.message || e) };
-  } finally {
-    if (timer) clearTimeout(timer);
   }
 }
 
@@ -3025,20 +3040,32 @@ function renderPaywall(){
 async function apiCab(path, opts) {
   const tg = window.Telegram?.WebApp;
   const initData = tg?.initData || '';
-  let res;
-  try {
-    res = await fetch(API_BASE + path, {
-      method: (opts && opts.method) || 'GET',
-      mode: 'cors',
-      headers: {
-        'X-Telegram-Init-Data': initData,
-        'Accept': 'application/json',
-        ...((opts && opts.body) ? {'Content-Type': 'application/json'} : {}),
-      },
-      body: opts && opts.body ? JSON.stringify(opts.body) : undefined,
-    });
-  } catch (netErr) {
-    const err = new Error('network');
+  const url = API_BASE + path;
+  const cfg = {
+    method: (opts && opts.method) || 'GET',
+    mode: 'cors',
+    cache: 'no-store',
+    headers: {
+      'X-Telegram-Init-Data': initData,
+      'Accept': 'application/json',
+      ...((opts && opts.body) ? {'Content-Type': 'application/json'} : {}),
+    },
+    body: opts && opts.body ? JSON.stringify(opts.body) : undefined,
+  };
+  let res = null;
+  let lastErr = null;
+  // Render free может «просыпаться» до минуты — пробуем несколько раз
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      res = await fetch(url, cfg);
+      break;
+    } catch (netErr) {
+      lastErr = netErr;
+      if (attempt < 3) await new Promise(r => setTimeout(r, 1200 * (attempt + 1)));
+    }
+  }
+  if (!res) {
+    const err = new Error((lastErr && lastErr.message) || 'network');
     err.status = 0;
     err.detail = 'network';
     throw err;
@@ -3132,7 +3159,7 @@ async function openCabinet() {
     state.cabinetData = await apiCab('/api/cabinet/overview');
   } catch (e) {
     console.error('cabinet overview failed', e && e.status, e && e.detail);
-    state.cabinetData = { error: true, status: e && e.status, detail: e && e.detail };
+    state.cabinetData = { error: true, status: e && e.status, detail: e && e.detail, message: e && e.message };
   }
   fullRender();
 }
@@ -3204,7 +3231,9 @@ function renderCabinet() {
         ? 'Партнёрский доступ не найден. Проверьте, что ваш @username указан в списке партнёров.'
         : 'Этот раздел открыт владельцу и партнёрам. Проверьте, что аккаунт привязан в боте.';
     }
-    const code = d.status ? `<div class="text-2xs text-faint mt-3">код ${d.status}${d.detail ? ' · ' + escHtml(String(d.detail)) : ''}</div>` : '';
+    const code = d.status
+      ? `<div class="text-2xs text-faint mt-3">код ${d.status}${d.detail ? ' · ' + escHtml(String(d.detail)) : ''}</div>`
+      : `<div class="text-2xs text-faint mt-3">${escHtml(String(d.message || 'network'))} · network ${navigator.onLine ? 'online' : 'offline'}</div>`;
     el.innerHTML = `<div class="scroll">
       ${cabHead('Кабинет','Доступ')}
       <div class="cab-empty" style="margin-top:8px">
