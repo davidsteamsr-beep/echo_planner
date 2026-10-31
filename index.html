@@ -1098,6 +1098,239 @@
     }
     .cab-disable:active { transform: scale(.98); opacity: .85; }
 
+    /* ---------- cabinet · aurora ---------- */
+    .cab-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .cab-title {
+      margin: 0; font-size: 25px; line-height: 1.1; font-weight: 600;
+      letter-spacing: -.035em; color: var(--fg);
+    }
+    .cab-sub {
+      margin-top: 5px; font-size: 9.5px; font-weight: 700;
+      letter-spacing: .16em; text-transform: uppercase; color: var(--violet-2);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .cab-head .cab-x { width: 42px; height: 42px; border-radius: 50%; }
+    .cab-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 10px; border-radius: 999px;
+      font-size: 8.5px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
+      color: #fff; background: rgba(255, 255, 255, .18);
+      border: 1px solid rgba(255, 255, 255, .3);
+      backdrop-filter: blur(8px);
+    }
+    .cab-hero.cab-hero-partner {
+      background:
+        radial-gradient(120% 130% at 100% 0%, rgba(255, 255, 255, .28), transparent 52%),
+        linear-gradient(135deg, #17998f 0%, #2ed3c6 42%, #7c5cff 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 20px 52px rgba(46, 211, 198, .28);
+    }
+    .cab-hero-foot {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      margin-top: 16px; padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, .2);
+      font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, .82);
+    }
+    .cab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .cab-metric {
+      --c: var(--violet-2);
+      position: relative; display: flex; flex-direction: column; align-items: flex-start;
+      text-align: left; padding: 14px 15px 13px; border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .062), rgba(255, 255, 255, .024));
+      border: 1px solid var(--line);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .055), 0 10px 26px rgba(0, 0, 0, .22);
+      transition: transform .18s var(--ease), background .2s ease;
+    }
+    .cab-metric:active { transform: scale(.96); }
+    .cab-metric .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--c); box-shadow: 0 0 10px var(--c);
+      margin-bottom: 11px;
+    }
+    .cab-metric .v {
+      font-size: 27px; font-weight: 600; letter-spacing: -.045em; line-height: 1;
+      color: var(--fg); font-variant-numeric: tabular-nums;
+    }
+    .cab-metric .v.sm { font-size: 19px; letter-spacing: -.03em; }
+    .cab-metric .l {
+      margin-top: 7px; font-size: 9.5px; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+    }
+    .cab-metric .arr { position: absolute; right: 13px; top: 12px; color: var(--faint); }
+    .cab-metric.trial { --c: var(--violet-2); }
+    .cab-metric.pro { --c: var(--teal); }
+    .cab-metric.life { --c: var(--amber); }
+    .cab-metric.off { --c: var(--faint); }
+    .cab-wide {
+      display: flex; align-items: center; gap: 9px; width: 100%;
+      padding: 12px 15px; border-radius: 16px; margin-top: 9px;
+      background: rgba(255, 255, 255, .035); border: 1px solid var(--line-soft);
+      font-size: 12px; font-weight: 500; color: var(--muted); text-align: left;
+      transition: transform .17s var(--ease), background .2s ease;
+    }
+    .cab-wide:active { transform: scale(.98); background: rgba(255, 255, 255, .06); }
+    .cab-wide .dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+      background: var(--faint); box-shadow: 0 0 10px rgba(255, 255, 255, .2);
+    }
+    .cab-wide .v { margin-left: auto; font-size: 14px; font-weight: 600; color: var(--fg); }
+    .cab-wide .arr { color: var(--faint); display: flex; }
+    .cab-sec {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; margin: 22px 2px 10px;
+    }
+    .cab-count {
+      font-size: 10px; font-weight: 700; color: var(--faint);
+      letter-spacing: .06em; font-variant-numeric: tabular-nums;
+    }
+    .cab-person {
+      display: flex; align-items: center; gap: 11px; width: 100%;
+      padding: 11px 12px; border-radius: 19px; margin-bottom: 8px;
+      background: rgba(255, 255, 255, .042);
+      border: 1px solid var(--line-soft);
+      text-align: left;
+      transition: transform .17s var(--ease), background .2s ease;
+    }
+    .cab-person:active { transform: scale(.98); background: rgba(255, 255, 255, .07); }
+    .cab-person .meta { flex: 1; min-width: 0; }
+    .cab-person .nm {
+      font-size: 13.5px; font-weight: 600; letter-spacing: -.015em;
+      color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .cab-person .un {
+      font-size: 10px; color: var(--muted); margin-top: 2px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .cab-person .right { flex-shrink: 0; text-align: right; }
+    .cab-person .amt { font-size: 11.5px; font-weight: 600; color: var(--teal); }
+    .cab-person .cnt { font-size: 9.5px; color: var(--faint); margin-top: 2px; }
+    .cab-person .chev { color: var(--faint); display: flex; flex-shrink: 0; }
+    .cab-ava {
+      width: 44px; height: 44px; border-radius: 15px; flex-shrink: 0;
+      display: grid; place-items: center;
+      font-size: 15px; font-weight: 700; color: #fff;
+      background: linear-gradient(140deg, #6a48ff, #a46bff 55%, #ff6b8a);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 6px 18px rgba(124, 92, 255, .28);
+    }
+    .cab-ava.teal {
+      background: linear-gradient(140deg, #17998f, #2ed3c6 55%, #6a48ff);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 6px 18px rgba(46, 211, 198, .22);
+    }
+    .cab-ava.amber {
+      background: linear-gradient(140deg, #ff9a3c, #ffb020 55%, #ff6b8a);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 6px 18px rgba(255, 176, 32, .2);
+    }
+    .cab-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 8px; border-radius: 999px;
+      font-size: 8.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+      color: var(--muted); background: rgba(255, 255, 255, .07);
+      border: 1px solid var(--line-soft); white-space: nowrap;
+    }
+    .cab-badge.trial {
+      color: #c9b8ff; background: rgba(124, 92, 255, .16);
+      border-color: rgba(124, 92, 255, .3);
+    }
+    .cab-badge.monthly {
+      color: #8df3e9; background: rgba(46, 211, 198, .14);
+      border-color: rgba(46, 211, 198, .28);
+    }
+    .cab-badge.lifetime {
+      color: #ffd27a; background: rgba(255, 176, 32, .14);
+      border-color: rgba(255, 176, 32, .3);
+    }
+    .cab-empty {
+      padding: 24px 18px; border-radius: 22px; text-align: center;
+      border: 1px dashed rgba(255, 255, 255, .14);
+      background: rgba(255, 255, 255, .02);
+      color: var(--muted); font-size: 12.5px; line-height: 1.5;
+    }
+    .cab-add {
+      display: flex; align-items: center; gap: 12px; width: 100%;
+      padding: 13px 15px; border-radius: 20px; margin: 2px 0 14px;
+      border: 1px dashed rgba(124, 92, 255, .42);
+      background: rgba(124, 92, 255, .08);
+      text-align: left;
+      transition: transform .17s var(--ease), background .2s ease;
+    }
+    .cab-add:active { transform: scale(.98); background: rgba(124, 92, 255, .14); }
+    .cab-add .ico {
+      width: 38px; height: 38px; border-radius: 13px; flex-shrink: 0;
+      display: grid; place-items: center;
+      color: var(--violet-2); background: rgba(124, 92, 255, .2);
+      border: 1px solid rgba(124, 92, 255, .34);
+    }
+    .cab-add .tt { font-size: 13.5px; font-weight: 600; color: var(--fg); }
+    .cab-add .ss { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .cab-add .arr { margin-left: auto; color: var(--faint); display: flex; }
+    .cab-profile {
+      display: flex; align-items: center; gap: 14px;
+      padding: 18px; border-radius: 26px; margin-bottom: 12px;
+      background:
+        radial-gradient(120% 130% at 100% 0%, rgba(124, 92, 255, .16), transparent 58%),
+        linear-gradient(160deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .025));
+      border: 1px solid rgba(124, 92, 255, .22);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 16px 38px rgba(0, 0, 0, .3);
+    }
+    .cab-profile .cab-ava { width: 56px; height: 56px; border-radius: 19px; font-size: 20px; }
+    .cab-profile .nm {
+      font-size: 19px; font-weight: 600; letter-spacing: -.03em; line-height: 1.15;
+      color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .cab-profile .un {
+      font-size: 11px; color: var(--muted); margin-top: 3px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .cab-until { font-size: 9.5px; color: var(--faint); margin-left: 6px; }
+    .cab-mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+    .cab-mini > div {
+      padding: 11px 6px; border-radius: 15px; text-align: center;
+      background: rgba(255, 255, 255, .045); border: 1px solid var(--line-soft);
+    }
+    .cab-mini .v {
+      font-size: 17px; font-weight: 600; letter-spacing: -.03em;
+      color: var(--fg); font-variant-numeric: tabular-nums;
+    }
+    .cab-mini .l {
+      font-size: 8px; color: var(--muted); margin-top: 4px;
+      text-transform: uppercase; letter-spacing: .09em; font-weight: 700;
+    }
+    .cab-line {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 10px 0; font-size: 11.5px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .cab-line:last-child { border-bottom: 0; }
+    .cab-line .t { color: var(--muted); flex-shrink: 0; }
+    .cab-line .a {
+      font-weight: 600; color: var(--fg); min-width: 0; flex: 1;
+      text-align: right;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .cab-line.fin .a { text-align: left; font-weight: 500; }
+    .cab-line.fin .t { flex-shrink: 0; }
+    .cab-ref {
+      padding: 12px 14px; border-radius: 15px;
+      background: rgba(0, 0, 0, .32); border: 1px solid var(--line-soft);
+      font-size: 10.5px; line-height: 1.55; color: var(--muted);
+      word-break: break-all; user-select: text;
+    }
+    .cab-btn-inline { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .cab-note { font-size: 12px; line-height: 1.6; color: var(--muted); }
+    .cab-note b { color: var(--fg); font-weight: 600; }
+    .cab-field { margin-top: 14px; }
+    .cab-field label {
+      display: block; margin-left: 2px;
+      font-size: 9px; font-weight: 800; letter-spacing: .13em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .cab-skel {
+      border-radius: 26px; border: 1px solid var(--line-soft);
+      background: linear-gradient(100deg, rgba(255, 255, 255, .04) 30%, rgba(255, 255, 255, .1) 50%, rgba(255, 255, 255, .04) 70%);
+      background-size: 220% 100%;
+      animation: cabSkel 1.5s linear infinite;
+    }
+    @keyframes cabSkel { to { background-position: -220% 0; } }
+
     /* ---------- channel ---------- */
     .channel-card {
       display: flex; align-items: center; gap: 13px;
@@ -1566,6 +1799,7 @@ function iso(d=new Date()){ return d.toISOString().slice(0,10); }
 function hhmm(d=new Date()){ return d.toTimeString().slice(0,5); }
 function money(n){ return Math.abs(Math.round(n)).toLocaleString('ru-RU').replace(/\u00A0/g,' ')+' ₽'; }
 function num(n){ return Math.round(n).toLocaleString('ru-RU').replace(/\u00A0/g,' '); }
+function escHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function dayTitle(d=new Date()){ return d.getDate()+' '+MONTHS[d.getMonth()]; }
 function formatWhen(date,time){
   const d=new Date(date+'T12:00:00');
@@ -1644,7 +1878,7 @@ function save(){
 
 const _loaded=load();
 ['expenses','meetings','tasks','meals','notes','chat'].forEach(k=>{ if(!Array.isArray(_loaded[k])) _loaded[k]=[]; });
-let state={..._loaded, tab:'digest', arthurOpen:false, moreOpen:false, paywallOpen:false, cabinetOpen:false, cabinetView:'home', cabinetFilter:'all', cabinetUsers:[], cabinetDetail:null, cabinetPartner:null, cabinetData:null, filterMoney:'all', filterTasks:'all', calCursor:new Date(), calPicked:iso()};
+let state={..._loaded, tab:'digest', arthurOpen:false, moreOpen:false, paywallOpen:false, cabinetOpen:false, cabinetView:'home', cabinetFilter:'all', cabinetFrom:'users', cabinetUsers:[], cabinetDetail:null, cabinetPartner:null, cabinetData:null, filterMoney:'all', filterTasks:'all', calCursor:new Date(), calPicked:iso()};
 
 function markSVG(size=28, inverted=false){
   const g=inverted
@@ -1667,7 +1901,11 @@ function icon(name, size=20){
     notes:'<path d="M6 3.6h9.2L19 7.4v13H6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14.6 3.8v4h4M9 12h7M9 15.6h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
     settings:'<circle cx="12" cy="12" r="3.1" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.2v2.1M12 18.7v2.1M20.8 12h-2.1M5.3 12H3.2M18.2 5.8l-1.5 1.5M7.3 16.7l-1.5 1.5M18.2 18.2l-1.5-1.5M7.3 7.3 5.8 5.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
     arrow:'<path d="M9 5.5 15.5 12 9 18.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>',
-    spark:'<path d="M12 3.6l1.65 4.9 4.9 1.65-4.9 1.65L12 16.7l-1.65-4.9-4.9-1.65 4.9-1.65z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M18.4 15.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7z" fill="currentColor"/>'
+    spark:'<path d="M12 3.6l1.65 4.9 4.9 1.65-4.9 1.65L12 16.7l-1.65-4.9-4.9-1.65 4.9-1.65z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M18.4 15.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7z" fill="currentColor"/>',
+    close:'<path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>',
+    plus:'<path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>',
+    copy:'<rect x="8.4" y="8.4" width="11.2" height="11.2" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M15.6 5.6H7.6A2 2 0 0 0 5.6 7.6v8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+    users:'<circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.7"/><path d="M3.6 19.2c0-3 2.4-5.2 5.4-5.2s5.4 2.2 5.4 5.2M16 5.4a3 3 0 0 1 0 5.8M17.4 14.2c2 .5 3.4 2.3 3.4 4.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>'
   };
   return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" aria-hidden="true">${P[name]||P.digest}</svg>`;
 }
@@ -2748,10 +2986,76 @@ async function apiCab(path, opts) {
   return res.json();
 }
 
+const CAB_FILTERS={all:'Все',trial:'Триал',monthly:'Pro',lifetime:'Навсегда',inactive:'Без подписки'};
+
+function cabHead(title, sub, closeId){
+  return `<div class="cab-head">
+    <button type="button" class="back-btn pressable" id="cabBack" aria-label="Назад">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 5 L8 12 L15 19" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="head-text">
+      <h1 class="cab-title">${title}</h1>
+      ${sub?`<div class="cab-sub">${sub}</div>`:''}
+    </div>
+    ${closeId?`<button type="button" class="cab-x pressable" id="${closeId}" aria-label="Закрыть">${icon('close',15)}</button>`:''}
+  </div>`;
+}
+function cabAva(name, username, tone){
+  const src=String(name||username||'?').trim()||'?';
+  return `<div class="cab-ava ${tone||''}">${escHtml(src.slice(0,1).toUpperCase())}</div>`;
+}
+function cabBadge(sub){
+  const ok=sub&&sub.ok;
+  const t=String((sub&&sub.type)||'');
+  if(!ok) return '<span class="cab-badge">Без подписки</span>';
+  if(t==='trial') return '<span class="cab-badge trial">Триал</span>';
+  if(t==='monthly') return '<span class="cab-badge monthly">Pro</span>';
+  if(t==='lifetime') return '<span class="cab-badge lifetime">Навсегда</span>';
+  return `<span class="cab-badge">${escHtml(t||'—')}</span>`;
+}
+function cabMetric(kind, label, value, cls, delay, sm){
+  const tag = kind ? 'button' : 'div';
+  const attrs = kind ? ` type="button" data-kind="${kind}"` : '';
+  return `<${tag}${attrs} class="cab-metric ${cls||''} cab-anim ${kind?'pressable':''}" style="animation-delay:${delay||0}s">
+    <span class="dot"></span>
+    <span class="v num ${sm?'sm':''}">${value}</span>
+    <span class="l">${label}</span>
+    ${kind?`<span class="arr">${icon('arrow',14)}</span>`:''}
+  </${tag}>`;
+}
+function cabUserRow(u, i){
+  const name=escHtml(u.first_name||'Без имени');
+  const un=u.username?'@'+escHtml(u.username):'id '+u.id;
+  return `<button type="button" class="cab-person cab-anim" style="animation-delay:${0.04+i*0.035}s" data-uid="${u.id}">
+    ${cabAva(u.first_name,u.username,['','teal','amber'][i%3])}
+    <div class="meta">
+      <div class="nm">${name}</div>
+      <div class="un">${un}</div>
+    </div>
+    <div class="right">${cabBadge(u.subscription)}</div>
+    <span class="chev">${icon('arrow',15)}</span>
+  </button>`;
+}
+async function copyCab(text, btn){
+  const flash=()=>{
+    haptic('success');
+    if(!btn) return;
+    const old=btn.innerHTML;
+    btn.innerHTML='✓ Скопировано';
+    setTimeout(()=>{ try{ btn.innerHTML=old; }catch(e){} }, 1500);
+  };
+  try { await navigator.clipboard.writeText(text||''); flash(); }
+  catch(e){ try{ prompt('Ссылка', text||''); }catch(_){} }
+}
+
 async function openCabinet() {
   state.cabinetOpen = true;
   state.cabinetView = 'home';
+  state.cabinetFrom = 'users';
   state.cabinetDetail = null;
+  state.cabinetPartner = null;
+  state.cabinetData = null;
+  fullRender();
   try {
     state.cabinetData = await apiCab('/api/cabinet/overview');
   } catch (e) {
@@ -2769,108 +3073,192 @@ function renderCabinet() {
   el.style.animation = 'none';
   void el.offsetWidth;
   el.style.animation = '';
-  const d = state.cabinetData || {};
-  if (d.error) {
-    el.innerHTML = `<div class="scroll p-4"><button type="button" id="cabBack" class="text-sm text-muted mb-4">← Назад</button><div class="card p-4">Не удалось загрузить кабинет</div></div>`;
-    document.getElementById('cabBack').onclick = () => { state.cabinetOpen=false; fullRender(); };
+
+  const closeAll = () => {
+    state.cabinetOpen = false;
+    state.cabinetView = 'home';
+    state.cabinetDetail = null;
+    state.cabinetPartner = null;
+    state.cabinetData = null;
+    fullRender();
+  };
+  const goHome = () => {
+    state.cabinetView = 'home';
+    state.cabinetDetail = null;
+    state.cabinetPartner = null;
+    fullRender();
+  };
+  const bindHead = (back, closeId, closeFn) => {
+    const b = document.getElementById('cabBack');
+    if (b) b.onclick = back || closeAll;
+    const c = document.getElementById(closeId || 'cabClose');
+    if (c) c.onclick = closeFn || closeAll;
+  };
+
+  const d = state.cabinetData;
+
+  /* loading */
+  if (!d) {
+    el.innerHTML = `<div class="scroll">
+      ${cabHead('Кабинет','Загрузка')}
+      <div class="cab-skel" style="height:158px"></div>
+      <div class="cab-grid mt-3">
+        <div class="cab-skel" style="height:88px;border-radius:20px"></div>
+        <div class="cab-skel" style="height:88px;border-radius:20px"></div>
+        <div class="cab-skel" style="height:88px;border-radius:20px"></div>
+        <div class="cab-skel" style="height:88px;border-radius:20px"></div>
+      </div>
+    </div>`;
+    bindHead(closeAll);
     return;
   }
 
+  /* error */
+  if (d.error) {
+    el.innerHTML = `<div class="scroll">
+      ${cabHead('Кабинет','Доступ')}
+      <div class="cab-empty" style="margin-top:8px">
+        <div class="cab-ava" style="margin:0 auto 14px">?</div>
+        <div class="text-lg font-semibold" style="color:var(--fg)">Кабинет недоступен</div>
+        <div class="mt-2">Этот раздел открыт владельцу и партнёрам. Проверьте, что аккаунт привязан в боте.</div>
+        <button type="button" class="steel pressable w-full py-3 text-sm font-semibold mt-4" id="cabRetry">Попробовать снова</button>
+      </div>
+    </div>`;
+    bindHead(closeAll);
+    document.getElementById('cabRetry')?.addEventListener('click', () => openCabinet());
+    return;
+  }
+
+  /* users list */
   if (state.cabinetView === 'users') {
     const users = state.cabinetUsers || [];
-    el.innerHTML = `<div class="scroll p-4">
-      <button type="button" id="cabBack" class="text-sm text-muted mb-4">← Назад</button>
-      <div class="kicker mb-2">${state.cabinetFilter}</div>
-      <div class="text-xl font-semibold mb-4">Пользователи · ${users.length}</div>
-      ${users.map((u,i) => `
-        <button type="button" class="user-row pressable w-full text-left" style="animation-delay:${0.04+i*0.04}s" data-uid="${u.id}">
-          <div style="flex:1;min-width:0">
-            <div class="text-sm font-semibold truncate">${u.first_name || '—'} ${u.username ? '@'+u.username : ''}</div>
-            <div class="text-2xs text-muted">${u.subscription?.type || 'нет'} · id ${u.id}</div>
-          </div>
-          <div class="text-muted">›</div>
-        </button>`).join('') || '<div class="card p-4 text-muted text-sm">Пусто</div>'}
+    const label = CAB_FILTERS[state.cabinetFilter] || 'Все';
+    el.innerHTML = `<div class="scroll">
+      ${cabHead('Пользователи', escHtml(label), 'cabClose')}
+      <div class="cab-sec" style="margin-top:0">
+        <span class="kicker">${escHtml(label)}</span>
+        <span class="cab-count">${users.length}</span>
+      </div>
+      ${users.map(cabUserRow).join('') || '<div class="cab-empty">Здесь пока никого нет</div>'}
     </div>`;
-    document.getElementById('cabBack').onclick = () => { state.cabinetView='home'; fullRender(); };
+    bindHead(goHome, 'cabClose', closeAll);
     el.querySelectorAll('[data-uid]').forEach(b => b.onclick = async () => {
+      haptic('select');
+      state.cabinetFrom = 'users';
       try {
         state.cabinetDetail = await apiCab('/api/cabinet/user/' + b.dataset.uid);
         state.cabinetView = 'detail';
         fullRender();
-      } catch(e) { alert('Ошибка загрузки'); }
+      } catch (e) { alert('Ошибка загрузки'); }
     });
     return;
   }
 
+  /* user detail */
   if (state.cabinetView === 'detail' && state.cabinetDetail) {
     const u = state.cabinetDetail;
-    el.innerHTML = `<div class="scroll p-4">
-      <button type="button" id="cabBack" class="text-sm text-muted mb-4">← Назад</button>
-      <div class="text-xl font-semibold">${u.first_name || 'User'}</div>
-      <div class="text-sm text-muted mb-3">${u.username ? '@'+u.username : 'без username'} · id ${u.id}</div>
-      <div class="card p-4 mb-3 text-sm">
-        <div>Роль: <b>${u.role}</b></div>
-        <div>Подписка: <b>${u.subscription?.type || '—'}</b> ${u.subscription?.until ? 'до '+u.subscription.until : ''}</div>
-        <div>Реферал: <b>${u.referred_by || '—'}</b></div>
-        <div>Создан: ${u.created_at || '—'}</div>
-        <div class="mt-2">Записей: 💰${u.counts?.finance||0} 📅${u.counts?.calendar||0} ✅${u.counts?.tasks||0} 🍽${u.counts?.nutrition||0} 📝${u.counts?.notes||0}</div>
+    const c = u.counts || {};
+    const sub = u.subscription || {};
+    const fromPartner = state.cabinetFrom === 'partner' && !!state.cabinetPartner;
+    const pays = (u.payments || []).slice(-10).reverse();
+    const fin = (u.finance || []).slice(0, 10);
+    const payName = (t) => t === 'monthly' ? 'Pro · оплата' : t === 'lifetime' ? 'Навсегда · оплата' : (t || 'Платёж');
+    const roleName = u.role === 'owner' ? 'Владелец' : u.role === 'traffer' ? 'Партнёр' : 'Пользователь';
+    const subName = sub.type === 'monthly' ? 'Pro' : sub.type === 'lifetime' ? 'Навсегда' : sub.type === 'trial' ? 'Триал' : '—';
+    el.innerHTML = `<div class="scroll">
+      ${cabHead('Профиль', 'ID ' + u.id, 'cabClose')}
+      <div class="cab-profile cab-anim">
+        ${cabAva(u.first_name, u.username, '')}
+        <div style="flex:1;min-width:0">
+          <div class="nm">${escHtml(u.first_name || 'Пользователь')}</div>
+          <div class="un">${u.username ? '@' + escHtml(u.username) : 'без username'}</div>
+          <div class="mt-2">${cabBadge(sub)}${sub.until ? `<span class="cab-until">до ${escHtml(String(sub.until).slice(0,10))}</span>` : ''}</div>
+        </div>
       </div>
-      <div class="kicker mb-2">Платежи</div>
-      ${(u.payments||[]).map(p=>`<div class="card p-3 mb-2 text-2xs">${p.type} · ${p.at}</div>`).join('') || '<div class="text-muted text-sm mb-3">Нет</div>'}
-      <div class="kicker mb-2">Последние финансы</div>
-      ${(u.finance||[]).slice(0,8).map(x=>`<div class="card p-3 mb-2 text-2xs">${x.date} · ${x.amount}₽ · ${x.description||x.title||''}</div>`).join('') || '<div class="text-muted text-sm">Пусто</div>'}
+
+      <div class="card p-4 mb-3 cab-anim" style="animation-delay:.06s">
+        <div class="cab-mini">
+          <div><div class="v num">${c.finance||0}</div><div class="l">Расходы</div></div>
+          <div><div class="v num">${c.calendar||0}</div><div class="l">Встречи</div></div>
+          <div><div class="v num">${c.tasks||0}</div><div class="l">Задачи</div></div>
+          <div><div class="v num">${c.nutrition||0}</div><div class="l">Еда</div></div>
+          <div><div class="v num">${c.notes||0}</div><div class="l">Заметки</div></div>
+          <div><div class="v num">${u.payments ? u.payments.length : 0}</div><div class="l">Платежи</div></div>
+        </div>
+      </div>
+
+      <div class="card p-4 mb-3 cab-anim" style="animation-delay:.1s">
+        <div class="cab-line"><span class="t">Роль</span><span class="a">${roleName}</span></div>
+        <div class="cab-line"><span class="t">Реферал</span><span class="a">${escHtml(u.referred_by || '—')}</span></div>
+        <div class="cab-line"><span class="t">Создан</span><span class="a">${escHtml(String(u.created_at || '—').slice(0,10))}</span></div>
+        <div class="cab-line"><span class="t">Подписка</span><span class="a">${subName}</span></div>
+      </div>
+
+      <div class="cab-sec" style="margin-top:18px"><span class="kicker">Платежи</span><span class="cab-count">${pays.length}</span></div>
+      ${pays.map(p => `<div class="cab-line"><span class="t">${escHtml(payName(p.type))}</span><span class="a">${escHtml(String(p.at || '').slice(0,10))}</span></div>`).join('') || '<div class="cab-empty" style="padding:16px">Платежей нет</div>'}
+
+      <div class="cab-sec" style="margin-top:18px"><span class="kicker">Последние финансы</span><span class="cab-count">${fin.length}</span></div>
+      ${fin.map(x => `<div class="cab-line fin"><span class="a">${escHtml(x.description || x.title || 'Расход')}</span><span class="t">${escHtml(String(x.date || '').slice(0,10))} · ${money(Number(x.amount)||0)}</span></div>`).join('') || '<div class="cab-empty" style="padding:16px">Пока пусто</div>'}
+      <div style="height:8px"></div>
     </div>`;
-    document.getElementById('cabBack').onclick = () => { state.cabinetView='users'; fullRender(); };
+    bindHead(() => { state.cabinetView = fromPartner ? 'partner' : 'users'; fullRender(); }, 'cabClose', closeAll);
     return;
   }
 
-
+  /* partner detail (owner only) */
   if (state.cabinetView === 'partner' && state.cabinetPartner) {
     const tr = state.cabinetPartner;
     const users = tr.users || [];
-    el.innerHTML = `<div class="scroll p-4">
-      <div class="flex items-center justify-between mb-4 cab-anim">
-        <button type="button" id="cabBack" class="text-sm text-muted">← Назад</button>
-        <button type="button" class="cab-x pressable" id="partnerClose" aria-label="Закрыть">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
-            <path d="M6 6l12 12M18 6L6 18"/>
-          </svg>
-        </button>
+    const active = tr.active !== false;
+    el.innerHTML = `<div class="scroll">
+      ${cabHead('Партнёр', escHtml(tr.code || ''), 'partnerClose')}
+      <div class="cab-profile cab-anim">
+        ${cabAva(tr.name, tr.username, 'teal')}
+        <div style="flex:1;min-width:0">
+          <div class="nm">${escHtml(tr.name || tr.username || 'Партнёр')}</div>
+          <div class="un">@${escHtml(tr.username || '—')}</div>
+          <div class="mt-2">${active ? '<span class="cab-badge monthly">Активен</span>' : '<span class="cab-badge">Отключён</span>'}</div>
+        </div>
       </div>
-      <div class="cab-anim" style="animation-delay:.05s">
-        <div class="text-2xl font-semibold" style="background:linear-gradient(180deg,#fff,#999);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${tr.name || tr.username}</div>
-        <div class="text-sm text-muted mt-1">@${tr.username} · код ${tr.code}</div>
+
+      <div class="cab-grid mb-3">
+        ${cabMetric(null,'Клиенты',num(tr.users_count||0),'',0.05)}
+        ${cabMetric(null,'Заработано',num(tr.earned||0)+' ₽','pro',0.08,true)}
+        ${cabMetric(null,'Pro',num(tr.monthly||0),'pro',0.11)}
+        ${cabMetric(null,'Навсегда',num(tr.lifetime||0),'life',0.14)}
       </div>
-      <div class="flex gap-2 mt-4 mb-4">
-        <div class="cab-stat cab-anim" style="animation-delay:.1s"><div class="n">${tr.users_count||0}</div><div class="l">Юзеры</div></div>
-        <div class="cab-stat cab-anim" style="animation-delay:.16s"><div class="n">${tr.earned||0}</div><div class="l">₽</div></div>
-        <div class="cab-stat cab-anim" style="animation-delay:.22s"><div class="n">${tr.monthly||0}</div><div class="l">Pro</div></div>
-        <div class="cab-stat cab-anim" style="animation-delay:.28s"><div class="n">${tr.lifetime||0}</div><div class="l">∞</div></div>
+
+      <div class="card p-4 mb-4 cab-anim" style="animation-delay:.18s">
+        <div class="flex items-center justify-between">
+          <span class="kicker">Реф-ссылка</span>
+          <span class="cab-badge monthly">${active ? 'активна' : 'выключена'}</span>
+        </div>
+        <div class="cab-ref mt-2">${escHtml(tr.ref_link || '')}</div>
+        <button type="button" class="metal pressable w-full mt-3 py-3 text-sm font-semibold cab-btn-inline" id="copyPartnerRef">${icon('copy',16)} Скопировать</button>
       </div>
-      <div class="card p-4 mb-3 cab-anim" style="animation-delay:.32s">
-        <div class="kicker">Реф-ссылка</div>
-        <div class="text-2xs text-muted mt-2 break-all">${tr.ref_link || ''}</div>
-        <button type="button" class="steel pressable w-full mt-3 py-2 text-sm font-semibold" id="copyPartnerRef">Скопировать</button>
-      </div>
-      <div class="kicker mb-2 cab-anim" style="animation-delay:.36s">Клиенты · ${users.length}</div>
-      ${users.slice(0,40).map((u,i) => `
-        <div class="user-row" style="animation-delay:${0.38+i*0.03}s">
-          <div style="flex:1;min-width:0">
-            <div class="text-sm font-semibold truncate">${u.first_name || '—'} ${u.username ? '@'+u.username : ''}</div>
-            <div class="text-2xs text-muted">${u.subscription?.type || 'нет'} · id ${u.id}</div>
-          </div>
-        </div>`).join('') || '<div class="text-muted text-sm mb-3">Пока нет</div>'}
-      <button type="button" class="cab-disable pressable cab-anim" style="animation-delay:.5s" id="disablePartner">Отключить</button>
-      <div class="text-2xs text-muted text-center mt-2 mb-6 cab-anim" style="animation-delay:.55s">Снимет безлимит, кабинет и остановит рефку</div>
+
+      <div class="cab-sec" style="margin-top:0"><span class="kicker">Клиенты</span><span class="cab-count">${users.length}</span></div>
+      ${users.slice(0,40).map((u,i) => cabUserRow(u,i)).join('') || '<div class="cab-empty">У партнёра пока нет клиентов</div>'}
+
+      <button type="button" class="cab-disable pressable" id="disablePartner">Отключить партнёра</button>
+      <div class="text-2xs text-faint text-center mt-2 mb-4">Снимет безлимит, кабинет и остановит рефку</div>
     </div>`;
-    const goHome = () => { state.cabinetView = 'home'; state.cabinetPartner = null; fullRender(); };
-    document.getElementById('cabBack').onclick = goHome;
-    document.getElementById('partnerClose').onclick = goHome;
-    document.getElementById('copyPartnerRef')?.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(tr.ref_link || ''); alert('Скопировано'); } catch(e) { prompt('Ссылка', tr.ref_link); }
+    bindHead(goHome, 'partnerClose', goHome);
+    document.getElementById('copyPartnerRef')?.addEventListener('click', (e) => copyCab(tr.ref_link, e.currentTarget));
+    el.querySelectorAll('[data-uid]').forEach(b => b.onclick = async () => {
+      haptic('select');
+      state.cabinetFrom = 'partner';
+      try {
+        state.cabinetDetail = await apiCab('/api/cabinet/user/' + b.dataset.uid);
+        state.cabinetView = 'detail';
+        fullRender();
+      } catch (e) { alert('Ошибка загрузки'); }
     });
-    document.getElementById('disablePartner')?.addEventListener('click', async () => {
-      if (!confirm('Отключить партнёра @' + tr.username + '?\nРефка перестанет работать, безлимит и кабинет снимутся.')) return;
+    const dis = document.getElementById('disablePartner');
+    dis?.addEventListener('click', async () => {
+      if (!confirm('Отключить партнёра @' + (tr.username || '') + '?\nРефка перестанет работать, безлимит и кабинет снимутся.')) return;
+      dis.disabled = true;
+      dis.textContent = 'Отключаем…';
       try {
         await apiCab('/api/cabinet/traffers/' + encodeURIComponent(tr.code) + '/disable', { method: 'POST', body: {} });
         state.cabinetData = await apiCab('/api/cabinet/overview');
@@ -2879,87 +3267,179 @@ function renderCabinet() {
         fullRender();
       } catch (e) {
         alert('Не удалось отключить');
+        dis.disabled = false;
+        dis.textContent = 'Отключить партнёра';
       }
     });
     return;
   }
 
-  // home
+  /* home */
   const ov = d.overview || {};
   const isOwner = d.role === 'owner';
-  el.innerHTML = `<div class="scroll p-4">
-    <button type="button" id="cabBack" class="text-sm text-muted mb-4">← Назад</button>
-    <div class="text-2xl font-semibold mb-1 cab-anim" style="animation-delay:.02s;background:linear-gradient(180deg,#fff,#999);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${isOwner ? 'Кабинет владельца' : 'Кабинет партнёра'}</div>
-    <div class="text-2xs text-muted mb-4">${isOwner ? 'Вся база' : 'Только ваши клиенты'}</div>
-    <div class="flex gap-2 mb-4">
-      <button type="button" class="cab-stat pressable cab-anim" style="animation-delay:.05s" data-kind="all"><div class="n">${ov.total||0}</div><div class="l">Все</div></button>
-      <button type="button" class="cab-stat pressable cab-anim" style="animation-delay:.12s" data-kind="trial"><div class="n">${ov.trial||0}</div><div class="l">Триал</div></button>
-      <button type="button" class="cab-stat pressable cab-anim" style="animation-delay:.19s" data-kind="monthly"><div class="n">${ov.monthly||0}</div><div class="l">Pro</div></button>
-      <button type="button" class="cab-stat pressable cab-anim" style="animation-delay:.26s" data-kind="lifetime"><div class="n">${ov.lifetime||0}</div><div class="l">∞</div></button>
+  const total = ov.total || 0;
+  const trial = ov.trial || 0;
+  const monthly = ov.monthly || 0;
+  const lifetime = ov.lifetime || 0;
+  const inactive = ov.inactive != null ? ov.inactive : Math.max(0, total - trial - monthly - lifetime);
+  const partners = d.traffers || [];
+  const partnerRow = (tr, i) => `<button type="button" class="cab-person cab-anim" style="animation-delay:${0.26+i*0.04}s" data-partner="${escHtml(tr.code)}">
+    ${cabAva(tr.name, tr.username, ['teal','amber',''][i%3])}
+    <div class="meta">
+      <div class="nm">${escHtml(tr.name || tr.username || 'Партнёр')}</div>
+      <div class="un">@${escHtml(tr.username || '—')} · ${num(tr.users_count||0)} клиентов</div>
     </div>
-    ${!isOwner ? `<div class="card p-4 mb-4">
-      <div class="kicker">К выплате</div>
-      <div class="text-2xl font-semibold mt-1">${d.earned||0} ₽</div>
-      <div class="text-2xs text-muted mt-2">100₽ / мес · 1100₽ / навсегда</div>
-      ${d.ref_link ? `<div class="mt-3 text-2xs break-all text-muted">${d.ref_link}</div>
-      <button type="button" class="steel pressable w-full mt-2 py-2 text-sm font-semibold" id="copyRef">Скопировать ссылку</button>` : ''}
-    </div>` : ''}
-    ${isOwner ? `
-    <div class="kicker mb-2 cab-anim" style="animation-delay:.28s">Партнёры</div>
-    ${(d.traffers||[]).map((tr,i) => `
-      <button type="button" class="user-row pressable w-full text-left" style="animation-delay:${0.3+i*0.06}s" data-partner="${tr.code}">
-        <div style="flex:1;min-width:0">
-          <div class="text-sm font-semibold">${tr.name || tr.username}</div>
-          <div class="text-2xs text-muted">@${tr.username} · ${tr.users_count||0} юзеров · ${tr.earned||0}₽</div>
-        </div>
-        <div class="text-muted">›</div>
-      </button>`).join('') || '<div class="text-muted text-sm mb-3">Пока нет</div>'}
-    <button type="button" class="card pressable w-full text-center p-4 mb-4 cab-anim" style="animation-delay:.45s" id="addTraffer">
-      <span style="font-size:20px">＋</span>
-      <div class="text-sm font-semibold mt-1">Добавить партнёра</div>
-    </button>
-    <div id="trafferModal" class="cab-modal-bg hidden">
-      <div class="cab-modal">
-        <div class="text-lg font-semibold">Новый партнёр</div>
-        <div class="text-2xs text-muted mt-1">Telegram username и имя</div>
-        <input id="trUser" placeholder="username без @" />
-        <input id="trName" placeholder="Имя" />
-        <div class="flex gap-2 mt-4">
-          <button type="button" class="flex-1 card py-3 text-sm" id="trCancel">Отмена</button>
-          <button type="button" class="flex-1 metal pressable py-3 text-sm font-semibold" id="trOk">✓</button>
-        </div>
-      </div>
-    </div>` : ''}
-  </div>`;
+    <div class="right"><div class="amt">${num(tr.earned||0)} ₽</div><div class="cnt">заработано</div></div>
+    <span class="chev">${icon('arrow',15)}</span>
+  </button>`;
 
-  document.getElementById('cabBack').onclick = () => { state.cabinetOpen=false; fullRender(); };
+  el.innerHTML = `<div class="scroll">
+    ${cabHead('Кабинет', isOwner ? 'Владелец · вся база' : 'Партнёрская программа')}
+    ${isOwner ? `
+    <div class="hero cab-hero p-5 mb-3 cab-anim" style="animation-delay:.02s">
+      <div class="flex justify-between items-center">
+        <span class="kicker">Вся база</span>
+        <span class="cab-chip">OWNER</span>
+      </div>
+      <div class="num mt-3" style="font-size:46px;font-weight:600;letter-spacing:-.05em;line-height:1">${num(total)}</div>
+      <div class="text-sm mt-1" style="color:rgba(255,255,255,.8)">пользователей</div>
+      <div class="cab-hero-foot">
+        <span>${num(monthly + lifetime)} с подпиской</span>
+        <span>${num(inactive)} без</span>
+      </div>
+    </div>
+    <div class="cab-grid">
+      ${cabMetric('all','Все',num(total),'',0.05)}
+      ${cabMetric('trial','Триал',num(trial),'trial',0.08)}
+      ${cabMetric('monthly','Pro',num(monthly),'pro',0.11)}
+      ${cabMetric('lifetime','Навсегда',num(lifetime),'life',0.14)}
+    </div>
+    <button type="button" class="cab-wide pressable cab-anim" style="animation-delay:.17s" data-kind="inactive">
+      <span class="dot"></span>
+      <span>Без подписки</span>
+      <span class="v num">${num(inactive)}</span>
+      <span class="arr">${icon('arrow',14)}</span>
+    </button>
+
+    <div class="cab-sec"><span class="kicker">Партнёры</span><span class="cab-count">${partners.length}</span></div>
+    ${partners.map(partnerRow).join('') || '<div class="cab-empty">Партнёров пока нет — добавьте первого</div>'}
+
+    <button type="button" class="cab-add pressable" id="addTraffer">
+      <span class="ico">${icon('plus',19)}</span>
+      <span style="flex:1;min-width:0">
+        <span class="tt" style="display:block">Добавить партнёра</span>
+        <span class="ss" style="display:block">Telegram-аккаунт и имя</span>
+      </span>
+      <span class="arr">${icon('arrow',15)}</span>
+    </button>
+    <div class="text-2xs text-faint text-center mb-4">Данные синхронизированы с ботом</div>
+    ` : `
+    <div class="hero cab-hero cab-hero-partner p-5 mb-3 cab-anim" style="animation-delay:.02s">
+      <div class="flex justify-between items-center">
+        <span class="kicker">К выплате</span>
+        <span class="cab-chip">PARTNER</span>
+      </div>
+      <div class="num mt-3" style="font-size:40px;font-weight:600;letter-spacing:-.05em;line-height:1">${num(d.earned||0)} ₽</div>
+      <div class="text-sm mt-1" style="color:rgba(255,255,255,.82)">100 ₽ / мес · 1 100 ₽ / навсегда</div>
+      <div class="cab-hero-foot">
+        <span>${num(total)} клиентов</span>
+        <span>${num(monthly + lifetime)} с подпиской</span>
+      </div>
+    </div>
+    <div class="cab-grid">
+      ${cabMetric('all','Все клиенты',num(total),'',0.05)}
+      ${cabMetric('trial','Триал',num(trial),'trial',0.08)}
+      ${cabMetric('monthly','Pro',num(monthly),'pro',0.11)}
+      ${cabMetric('lifetime','Навсегда',num(lifetime),'life',0.14)}
+    </div>
+    <button type="button" class="cab-wide pressable cab-anim" style="animation-delay:.17s" data-kind="inactive">
+      <span class="dot"></span>
+      <span>Без подписки</span>
+      <span class="v num">${num(inactive)}</span>
+      <span class="arr">${icon('arrow',14)}</span>
+    </button>
+
+    ${d.ref_link ? `
+    <div class="card p-4 mt-4 mb-4 cab-anim" style="animation-delay:.21s">
+      <div class="flex items-center justify-between">
+        <span class="kicker">Ваша ссылка</span>
+        <span class="cab-badge monthly">активна</span>
+      </div>
+      <div class="cab-ref mt-2">${escHtml(d.ref_link)}</div>
+      <button type="button" class="metal pressable w-full mt-3 py-3 text-sm font-semibold cab-btn-inline" id="copyRef">${icon('copy',16)} Скопировать ссылку</button>
+    </div>` : ''}
+
+    <div class="card p-4 mb-4 cab-anim" style="animation-delay:.25s">
+      <div class="kicker mb-2">Как это работает</div>
+      <div class="cab-note">Делитесь ссылкой — клиенты приходят в бота. Вы получаете <b>100 ₽</b> за каждую месячную подписку и <b>1 100 ₽</b> за пожизненную. Нажмите на карточку выше, чтобы посмотреть своих клиентов.</div>
+    </div>
+    <div class="text-2xs text-faint text-center mb-4">Выплаты считаются автоматически по оплатам клиентов</div>
+    `}
+  </div>
+  ${isOwner ? `<div id="trafferModal" class="cab-modal-bg hidden">
+    <div class="cab-modal">
+      <div class="flex items-center justify-between">
+        <div class="text-lg font-semibold">Новый партнёр</div>
+        <button type="button" class="cab-x" id="trClose" aria-label="Закрыть">${icon('close',13)}</button>
+      </div>
+      <div class="text-2xs text-muted mt-1">Добавьте Telegram-аккаунт партнёра</div>
+      <div class="cab-field">
+        <label for="trUser">Username</label>
+        <input id="trUser" placeholder="username без @" autocomplete="off" autocapitalize="off" />
+      </div>
+      <div class="cab-field">
+        <label for="trName">Имя</label>
+        <input id="trName" placeholder="Как зовут" autocomplete="off" />
+      </div>
+      <div class="flex gap-2 mt-4">
+        <button type="button" class="card py-3 text-sm flex-1" id="trCancel">Отмена</button>
+        <button type="button" class="metal pressable py-3 text-sm font-semibold flex-1" id="trOk">Добавить</button>
+      </div>
+    </div>
+  </div>` : ''}`;
+
+  bindHead(closeAll);
+
   el.querySelectorAll('[data-kind]').forEach(b => b.onclick = async () => {
+    haptic('select');
     state.cabinetFilter = b.dataset.kind;
+    state.cabinetFrom = 'users';
     try {
       const r = await apiCab('/api/cabinet/users?kind=' + encodeURIComponent(b.dataset.kind));
       state.cabinetUsers = r.users || [];
       state.cabinetView = 'users';
       fullRender();
-    } catch(e) { alert('Не удалось загрузить список'); }
+    } catch (e) { alert('Не удалось загрузить список'); }
   });
+
   if (isOwner) {
+    const modal = document.getElementById('trafferModal');
+    const hide = () => modal?.classList.add('hidden');
     document.getElementById('addTraffer')?.addEventListener('click', () => {
-      document.getElementById('trafferModal')?.classList.remove('hidden');
+      haptic('light');
+      modal?.classList.remove('hidden');
+      setTimeout(() => document.getElementById('trUser')?.focus(), 80);
     });
-    document.getElementById('trCancel')?.addEventListener('click', () => {
-      document.getElementById('trafferModal')?.classList.add('hidden');
-    });
+    document.getElementById('trCancel')?.addEventListener('click', hide);
+    document.getElementById('trClose')?.addEventListener('click', hide);
+    modal?.addEventListener('click', (e) => { if (e.target === modal) hide(); });
     document.getElementById('trOk')?.addEventListener('click', async () => {
-      const username = document.getElementById('trUser')?.value?.trim();
-      const name = document.getElementById('trName')?.value?.trim();
-      if (!username) return;
+      const username = (document.getElementById('trUser')?.value || '').trim().replace(/^@+/, '');
+      const name = (document.getElementById('trName')?.value || '').trim();
+      if (!username) { document.getElementById('trUser')?.focus(); return; }
+      const btn = document.getElementById('trOk');
+      if (btn) { btn.disabled = true; btn.textContent = 'Добавляем…'; }
       try {
         await apiCab('/api/cabinet/traffers', { method: 'POST', body: { username, name } });
         state.cabinetData = await apiCab('/api/cabinet/overview');
         fullRender();
-      } catch(e) { alert('Ошибка добавления'); }
+      } catch (e) {
+        alert('Ошибка добавления');
+        if (btn) { btn.disabled = false; btn.textContent = 'Добавить'; }
+      }
     });
     el.querySelectorAll('[data-partner]').forEach(b => b.onclick = async () => {
+      haptic('select');
       try {
         state.cabinetPartner = await apiCab('/api/cabinet/traffers/' + encodeURIComponent(b.dataset.partner));
         state.cabinetView = 'partner';
@@ -2969,12 +3449,10 @@ function renderCabinet() {
       }
     });
   } else {
-    document.getElementById('copyRef')?.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(d.ref_link||''); alert('Скопировано'); } catch(e) { prompt('Ссылка', d.ref_link); }
-    });
+    const btn = document.getElementById('copyRef');
+    if (btn) btn.onclick = () => copyCab(d.ref_link, btn);
   }
 }
-
 
 function fullRender(){
   const map={
