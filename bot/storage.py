@@ -70,6 +70,119 @@ def _is_postgres() -> bool:
     return u.startswith("postgres://") or u.startswith("postgresql://")
 
 
+# ---------- Postgres DSN (Supabase / Render / любой Postgres) ----------
+
+# asyncpg отправляет незнакомые query-параметры на сервер как настройки сессии,
+# поэтому ?pgbouncer=true&connection_limit=1 из Prisma/Supabase-примеров роняют коннект.
+_PG_KEEP_PARAMS = {
+    "sslmode",
+    "application_name",
+    "connect_timeout",
+    "command_timeout",
+    "options",
+    "target_session_attrs",
+}
+
+
+def _encode_userinfo(url: str) -> str:
+    """Кодирует `#`, `?`, `/` внутри userinfo.
+
+    Пароль вида `p#ss` иначе обрывает URL на фрагменте, и host превращается в мусор.
+    Supabase/Postgres обычно отдают уже закодированный пароль, но вставляют его
+    руками — поэтому чиним на входе.
+    """
+    scheme, sep, rest = url.partition("://")
+    if not sep:
+        return url
+    slash = rest.find("/")
+    head = rest if slash == -1 else rest[:slash]
+    at = head.rfind("@")
+    if at == -1:
+        return url
+    userinfo = head[:at].replace("#", "%23").replace("?", "%3F").replace("/", "%2F")
+    return f"{scheme}://{userinfo}{head[at:]}{'' if slash == -1 else rest[slash:]}"
+
+
+def _pg_dsn() -> tuple[str, bool]:
+    """Нормализует DATABASE_URL под asyncpg.
+
+    Возвращает (dsn, transaction_pooler).
+    - percent-encoding пароля (Supabase выдаёт пароли со спецсимволами);
+    - sslmode=require по умолчанию (Supabase требует TLS);
+    - отбрасывает параметры, которые понимают Prisma/psycopg, но не asyncpg;
+    - определяет transaction pooler (порт 6543 / pgbouncer=true).
+    """
+    from urllib.parse import parse_qsl, quote, unquote, urlsplit, urlunsplit
+
+    url = _encode_userinfo(DATABASE_URL.strip())
+    if url.startswith("postgres://"):
+        url = "postgresql://" + url[len("postgres://") :]
+
+    parts = urlsplit(url)
+    host = parts.hostname or "localhost"
+    try:
+        port = parts.port or 5432
+    except ValueError:
+        port = 5432
+    user = unquote(parts.username or "postgres")
+    password = unquote(parts.password or "")
+    database = (parts.path or "/postgres").lstrip("/") or "postgres"
+
+    params = {k.lower(): v for k, v in parse_qsl(parts.query, keep_blank_values=True)}
+    transaction_pooler = (
+        port == 6543
+        or params.get("pgbouncer", "").lower() in ("true", "1", "yes")
+        or params.get("pool_mode", "").lower() == "transaction"
+    )
+
+    query = {"sslmode": params.get("sslmode") or "require"}
+    for key in ("application_name", "connect_timeout", "command_timeout", "options"):
+        if key in params:
+            query[key] = params[key]
+    query.setdefault("connect_timeout", "15")
+
+    netloc_host = f"[{host}]" if ":" in host else host
+    netloc = f"{quote(user, safe='')}:{quote(password, safe='')}@{netloc_host}:{port}"
+    dsn = urlunsplit(("postgresql", netloc, "/" + database, "&".join(f"{k}={quote(v, safe='')}" for k, v in query.items()), ""))
+    return dsn, transaction_pooler
+
+
+def _mask_dsn(dsn: str) -> str:
+    """DSN без пароля — для логов и диагностики."""
+    from urllib.parse import urlsplit, urlunsplit
+
+    try:
+        p = urlsplit(dsn)
+        userinfo = f"{p.username or 'postgres'}:***"
+        host = p.hostname or "?"
+        if ":" in host:
+            host = f"[{host}]"
+        netloc = f"{userinfo}@{host}:{p.port or 5432}"
+        return urlunsplit((p.scheme, netloc, p.path, p.query, ""))
+    except Exception:
+        return "postgresql://***"
+
+
+def _pg_hint(exc: BaseException) -> str:
+    """Человеческая подсказка по типовым ошибкам Supabase."""
+    msg = f"{type(exc).__name__}: {exc}".lower()
+    if "password authentication failed" in msg or "invalid password" in msg:
+        return "Неверный пароль БД — скопируйте строку подключения из Supabase заново (Database -> Reset database password)."
+    if "tenant/user" in msg or "tenant or user not found" in msg:
+        return "Проект Supabase на паузе или в DATABASE_URL неверный ref. Разбудите проект и скопируйте строку заново (Database -> Connect)."
+    if "enotfound" in msg or "getaddrinfo" in msg or "name or service not known" in msg or "nodename nor servname" in msg:
+        return "Хост БД не резолвится: проверьте регион pooler (aws-0-<region>.pooler.supabase.com) и что проект активен."
+    if "network is unreachable" in msg or "errno 101" in msg:
+        return "Прямое подключение Supabase отдаёт IPv6, а Render — только IPv4. Берите Session pooler: aws-0-<region>.pooler.supabase.com:5432."
+    if "prepared statement" in msg or "already exists" in msg:
+        return "Transaction pooler (порт 6543) не держит prepared statements — для ECHO надёжнее Session pooler на порту 5432."
+    if "timeout" in msg or "timed out" in msg:
+        return "Таймаут: проект Supabase на паузе (free-план засыпает) или исходящие соединения блокируются."
+    if "ssl" in msg:
+        return "Нужен TLS — добавьте ?sslmode=require к DATABASE_URL."
+    return "Проверьте DATABASE_URL, что проект Supabase активен и что используется Session pooler."
+
+
 # ---------- SQLite ----------
 
 async def _sqlite_conn():
@@ -99,11 +212,27 @@ async def _pg_pool_get():
     import asyncpg
 
     if _pg_pool is None:
-        url = DATABASE_URL
-        # Render sometimes gives postgres:// — asyncpg wants postgresql://
-        if url.startswith("postgres://"):
-            url = "postgresql://" + url[len("postgres://") :]
-        _pg_pool = await asyncpg.create_pool(url, min_size=1, max_size=4)
+        dsn, transaction_pooler = _pg_dsn()
+        kwargs: dict[str, Any] = {
+            "min_size": 1,
+            "max_size": 4,
+            "timeout": 20,
+            "command_timeout": 60,
+        }
+        if transaction_pooler:
+            # PgBouncer/Supavisor в transaction mode не поддерживает prepared statements.
+            kwargs["statement_cache_size"] = 0
+        try:
+            _pg_pool = await asyncpg.create_pool(dsn, **kwargs)
+        except Exception as exc:
+            logger.error(
+                "Postgres connect failed (%s, %s): %s | %s",
+                _mask_dsn(dsn),
+                "transaction pooler" if transaction_pooler else "session/direct",
+                exc,
+                _pg_hint(exc),
+            )
+            raise
         async with _pg_pool.acquire() as conn:
             await conn.execute(
                 """
@@ -114,7 +243,11 @@ async def _pg_pool_get():
                 )
                 """
             )
-        logger.info("Postgres pool ready")
+        logger.info(
+            "Postgres pool ready (%s, %s)",
+            _mask_dsn(dsn),
+            "transaction pooler" if transaction_pooler else "session/direct",
+        )
     return _pg_pool
 
 
@@ -127,6 +260,33 @@ async def _ensure_init():
     else:
         await _sqlite_conn()
     _init_done = True
+
+
+async def db_status() -> dict:
+    """Диагностика хранилища для /api/db-status. Секретов не отдаёт."""
+    backend = "postgres" if _is_postgres() else "sqlite"
+    try:
+        if _is_postgres():
+            pool = await _pg_pool_get()
+            async with pool.acquire() as conn:
+                await conn.fetchval("SELECT 1")
+            dsn, transaction_pooler = _pg_dsn()
+            return {
+                "backend": backend,
+                "ok": True,
+                "target": _mask_dsn(dsn),
+                "mode": "transaction-pooler" if transaction_pooler else "session-or-direct",
+            }
+        conn = await _sqlite_conn()
+        await conn.execute("SELECT 1")
+        return {"backend": backend, "ok": True, "target": str(DATABASE_PATH)}
+    except Exception as exc:
+        return {
+            "backend": backend,
+            "ok": False,
+            "error": str(exc)[:300],
+            "hint": _pg_hint(exc) if _is_postgres() else "Не удалось открыть SQLite-файл.",
+        }
 
 
 # ---------- public API (same as before) ----------

@@ -12,16 +12,25 @@ import hmac
 import json
 import logging
 import os
+import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Optional
 from urllib.parse import parse_qsl
 
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
+from fastapi.staticfiles import StaticFiles
 
 logger = logging.getLogger("echo.app")
 logging.basicConfig(level=logging.INFO)
+
+ROOT_DIR = Path(__file__).resolve().parent
+INDEX_FILE = ROOT_DIR / "index.html"
+PUBLIC_DIR = ROOT_DIR / "public"
+
+_NO_CACHE = {"Cache-Control": "no-cache, no-store, must-revalidate"}
 
 _bot = None
 _dp = None
@@ -58,8 +67,18 @@ def validate_init_data(init_data: str) -> dict | None:
         data_check = "\n".join(f"{k}={v}" for k, v in sorted(parsed.items()))
         secret = hmac.new(b"WebAppData", token.encode(), hashlib.sha256).digest()
         calculated = hmac.new(secret, data_check.encode(), hashlib.sha256).hexdigest()
-        if calculated != received_hash:
+        if not hmac.compare_digest(calculated, received_hash):
             return None
+        # initData не должен быть вечным: ограничиваем возраст (по умолчанию 7 дней).
+        max_age = int(os.getenv("INITDATA_MAX_AGE", "604800") or 0)
+        auth_date = parsed.get("auth_date")
+        if max_age > 0 and auth_date:
+            try:
+                if time.time() - int(auth_date) > max_age:
+                    logger.warning("initData expired")
+                    return None
+            except (TypeError, ValueError):
+                return None
         return json.loads(parsed.get("user", "{}"))
     except Exception:
         logger.exception("initData validate failed")
@@ -165,14 +184,53 @@ async def health():
     return PlainTextResponse("ok", status_code=200)
 
 
-@app.get("/")
-async def root():
-    return JSONResponse({
+@app.get("/api/info")
+async def api_info():
+    return {
         "service": "ECHO Planner",
         "status": "up",
         "bot_ready": _bot is not None,
         "api": True,
-    })
+    }
+
+
+@app.get("/api/db-status")
+async def db_status():
+    """Проверка подключения к БД (Supabase/Postgres/SQLite). Без секретов."""
+    from bot import storage
+
+    return await storage.db_status()
+
+
+def _serve_index() -> FileResponse | JSONResponse:
+    if not INDEX_FILE.exists():
+        return JSONResponse(
+            {"service": "ECHO Planner", "status": "up", "error": "index.html not found"},
+            status_code=500,
+        )
+    return FileResponse(INDEX_FILE, media_type="text/html", headers=_NO_CACHE)
+
+
+@app.get("/", include_in_schema=False)
+@app.get("/index.html", include_in_schema=False)
+@app.get("/app", include_in_schema=False)
+async def root():
+    """Мини-приложение отдаётся с того же домена, что и API."""
+    return _serve_index()
+
+
+if PUBLIC_DIR.is_dir():
+    app.mount("/public", StaticFiles(directory=str(PUBLIC_DIR)), name="public")
+
+
+@app.get("/channel.png", include_in_schema=False)
+@app.get("/channel-mini.png", include_in_schema=False)
+async def channel_image(request: Request):
+    name = request.url.path.lstrip("/") or "channel.png"
+    target = ROOT_DIR / name
+    if not target.exists():
+        raise HTTPException(404, "not_found")
+    return FileResponse(target, media_type="image/png")
 
 
 @app.get("/api/ping")

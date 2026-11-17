@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
-  <meta name="theme-color" content="#08090b" />
+  <meta name="theme-color" content="#08080a" />
   <meta name="color-scheme" content="dark" />
   <title>ECHO Planner</title>
   <link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet" /></noscript>
   <style>
     /* ============================================================
        ECHO PLANNER — "AURORA" redesign
@@ -1489,6 +1489,408 @@
     }
     .cab-hero-foot { border-top-color: rgba(255, 255, 255, .22); }
 
+    /* ============================================================
+       ECHO — NOIR / EMBER  ·  v2 identity layer
+       Тёмный премиум, тёплый акцент, крупная типографика
+       ============================================================ */
+    :root {
+      --bg: #08080a;
+      --bg-2: #0d0d10;
+      --fg: #f6f1e9;
+      --muted: #9a948b;
+      --faint: #67625b;
+      --violet: #ff8a5c;
+      --violet-2: #ffc08a;
+      --coral: #ff6b3d;
+      --coral-2: #ffb184;
+      --teal: #8fe3c0;
+      --amber: #ffd37a;
+      --lime: #d9f99d;
+      --line: rgba(255, 255, 255, .085);
+      --line-soft: rgba(255, 255, 255, .055);
+      --surface: rgba(255, 255, 255, .045);
+      --surface-2: rgba(255, 255, 255, .07);
+      --ember: #ff6b3d;
+      --ember-2: #ff9a5a;
+      --gold: #ffd37a;
+      --ink: #1a0904;
+      --radius: 24px;
+      --radius-sm: 17px;
+    }
+
+    html, body { background: #050506; }
+    body { color: var(--fg); }
+
+    .phone {
+      background:
+        radial-gradient(100% 58% at 8% -10%, rgba(255, 107, 61, .20), transparent 60%),
+        radial-gradient(80% 45% at 100% 0%, rgba(255, 211, 122, .10), transparent 55%),
+        radial-gradient(90% 55% at 50% 110%, rgba(255, 107, 61, .09), transparent 62%),
+        linear-gradient(180deg, #0b0b0e 0%, var(--bg) 55%, #060607 100%);
+    }
+    .phone::before {
+      background: radial-gradient(circle, rgba(255, 107, 61, .50), transparent 68%);
+      opacity: .42;
+    }
+    .phone::after {
+      background: radial-gradient(circle, rgba(255, 211, 122, .30), transparent 68%);
+      opacity: .38;
+    }
+
+    /* --- surfaces --- */
+    .card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .058), rgba(255, 255, 255, .022));
+      border-color: var(--line);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 18px 42px rgba(0, 0, 0, .42);
+    }
+    .row {
+      background: rgba(255, 255, 255, .04);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04);
+    }
+    .row.highlight {
+      border-color: rgba(255, 154, 90, .55);
+      box-shadow: 0 0 0 1px rgba(255, 154, 90, .22), 0 0 28px rgba(255, 107, 61, .18);
+      background: rgba(255, 122, 69, .09);
+    }
+    .steel {
+      background: linear-gradient(160deg, rgba(255, 255, 255, .075), rgba(255, 255, 255, .02));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 16px 36px rgba(0, 0, 0, .34);
+    }
+
+    /* --- hero: главный ember-акцент --- */
+    .hero {
+      background:
+        radial-gradient(120% 130% at 100% 0%, rgba(255, 255, 255, .38), transparent 55%),
+        linear-gradient(135deg, #ffb27a 0%, #ff7a45 44%, #e2411c 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .42), 0 24px 55px rgba(226, 65, 28, .34);
+    }
+    .hero::after { background: rgba(255, 255, 255, .26); }
+    .hero .kicker { color: rgba(26, 9, 4, .60); font-weight: 800; }
+    .hero .text-muted { color: rgba(26, 9, 4, .64); }
+    .hero .text-faint { color: rgba(26, 9, 4, .48); }
+    .hero .num, .hero .text-sm, .hero .text-lg, .hero .text-2xs { color: var(--ink); }
+    .hero .text-accent { color: var(--ink); }
+    .hero .progress { background: rgba(26, 9, 4, .18); }
+    .hero .progress > i { background: var(--ink); box-shadow: 0 0 12px rgba(26, 9, 4, .35); }
+    .hero.food-hero {
+      background:
+        radial-gradient(120% 130% at 100% 0%, rgba(255, 255, 255, .40), transparent 55%),
+        linear-gradient(135deg, #ffe3a8 0%, #ffc978 46%, #e8a94e 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 22px 50px rgba(232, 169, 78, .28);
+    }
+    .hero.cab-hero-partner {
+      background:
+        radial-gradient(120% 130% at 100% 0%, rgba(255, 255, 255, .32), transparent 55%),
+        linear-gradient(135deg, #ffc08a 0%, #e08a5a 44%, #8a3f22 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .34), 0 22px 52px rgba(138, 63, 34, .34);
+    }
+
+    .metal {
+      color: var(--ink);
+      background: linear-gradient(135deg, #ffc78f 0%, #ff8a5c 52%, #f05a2a 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .4), 0 10px 24px rgba(240, 90, 42, .30);
+    }
+    .metal .text-muted { color: rgba(26, 9, 4, .62); }
+    .metal .text-faint { color: rgba(26, 9, 4, .48); }
+
+    .avatar-btn,
+    .head-orb,
+    .orb-fab,
+    .orb-core,
+    .chat-ava {
+      background: linear-gradient(145deg, #2a1a12 0%, #8a4022 45%, #ff9a5a 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .34),
+        0 0 0 1px rgba(255, 154, 90, .22),
+        0 10px 26px rgba(226, 65, 28, .38);
+    }
+    .avatar-btn {
+      box-shadow:
+        0 0 0 3px rgba(8, 8, 10, .92),
+        0 0 0 4.5px rgba(255, 122, 69, .5),
+        0 10px 26px rgba(226, 65, 28, .38);
+    }
+    .orb-core::after,
+    .orb-fab::before { border-color: rgba(255, 154, 90, .5); }
+    .cab-ava {
+      background: linear-gradient(145deg, #2a1a12 0%, #8a4022 45%, #ffb184 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 6px 18px rgba(226, 65, 28, .26);
+    }
+    .cab-ava.teal {
+      background: linear-gradient(145deg, #12251e 0%, #2f7a5f 52%, #9df0cf 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 6px 18px rgba(47, 122, 95, .24);
+    }
+    .cab-ava.amber {
+      background: linear-gradient(145deg, #2a2113 0%, #8a6a2f 52%, #ffe3a8 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 6px 18px rgba(138, 106, 47, .22);
+    }
+
+    /* --- typography / top bar --- */
+    .hello { color: #b7afa4; }
+    .hello .dot {
+      background: var(--ember-2);
+      box-shadow: 0 0 0 4px rgba(255, 154, 90, .12), 0 0 10px rgba(255, 122, 69, .85);
+    }
+    .date-title {
+      font-size: 30px;
+      letter-spacing: -.045em;
+      color: var(--fg);
+      text-shadow: 0 1px 0 rgba(0, 0, 0, .35);
+    }
+    .date-title span { color: var(--faint); }
+    .head-sub { color: var(--ember-2); }
+    .head-title { letter-spacing: -.04em; }
+
+    /* --- bento tiles --- */
+    .tile {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .052), rgba(255, 255, 255, .018));
+      border-color: var(--line);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .055), 0 14px 34px rgba(0, 0, 0, .30);
+    }
+    .tile-ico { background: rgba(255, 122, 69, .14); border-color: rgba(255, 122, 69, .28); color: var(--violet-2); }
+    .tile-ico.coral { background: rgba(255, 107, 61, .16); border-color: rgba(255, 107, 61, .30); color: #ffb184; }
+    .tile-ico.teal { background: rgba(143, 227, 192, .12); border-color: rgba(143, 227, 192, .24); color: #b8f2d8; }
+    .tile-ico.amber { background: rgba(255, 211, 122, .12); border-color: rgba(255, 211, 122, .26); color: #ffe3a8; }
+    .tile-ico.lime { background: rgba(217, 249, 157, .10); border-color: rgba(217, 249, 157, .24); color: #e6ffb8; }
+    .tile-num {
+      font-family: var(--font);
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -.035em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* --- dock --- */
+    .dock {
+      background: rgba(15, 14, 16, .86);
+      border-color: rgba(255, 255, 255, .09);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 22px 52px rgba(0, 0, 0, .62);
+    }
+    .dock-item.on {
+      color: #fff;
+      background: linear-gradient(180deg, rgba(255, 122, 69, .24), rgba(255, 107, 61, .07));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 0 24px rgba(255, 107, 61, .16);
+    }
+    .dock-item.on svg { filter: drop-shadow(0 0 9px rgba(255, 122, 69, .75)); }
+    .dock-item.on::after {
+      background: linear-gradient(90deg, var(--gold), var(--ember));
+      box-shadow: 0 0 10px rgba(255, 107, 61, .85);
+    }
+    .orb-fab.dock-orb.on .orb-core {
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .35),
+        0 0 0 2px rgba(255, 196, 138, .6),
+        0 0 30px rgba(255, 107, 61, .75);
+    }
+    .orb-fab.dock-orb { background: none; box-shadow: none; }
+
+    /* --- controls --- */
+    .progress { background: rgba(255, 255, 255, .09); }
+    .progress > i {
+      background: linear-gradient(90deg, var(--ember-2), var(--gold));
+      box-shadow: 0 0 14px rgba(255, 122, 69, .40);
+    }
+    .back-btn {
+      background: rgba(255, 255, 255, .05);
+      border-color: var(--line);
+    }
+    .check.done {
+      background: linear-gradient(140deg, var(--ember-2), var(--ember));
+      box-shadow: 0 3px 14px rgba(255, 107, 61, .45);
+    }
+    .chip.on {
+      color: var(--ink);
+      background: linear-gradient(135deg, #ffd9b8, #ff9a5a);
+      box-shadow: 0 6px 18px rgba(255, 107, 61, .26);
+    }
+    .cal-cell.hit::after { background: var(--ember-2); box-shadow: 0 0 7px rgba(255, 122, 69, .9); }
+    .cal-cell.today { box-shadow: inset 0 0 0 1.5px var(--ember-2); }
+    .cal-cell.hit.today {
+      background: linear-gradient(140deg, var(--ember-2), #d8431c);
+      box-shadow: 0 6px 18px rgba(255, 107, 61, .42);
+    }
+    .send-btn { background: linear-gradient(135deg, var(--ember-2), var(--ember)); color: var(--ink); }
+    .week-bars span.on { background: linear-gradient(180deg, var(--gold), var(--ember)); }
+    .week-bars span.soft { background: linear-gradient(180deg, #ffe3a8, #e8a94e); }
+    .channel-cta { background: linear-gradient(135deg, #ffd9b8, #ff9a5a); color: var(--ink); }
+    .channel-card {
+      background: linear-gradient(150deg, rgba(255, 122, 69, .14), rgba(255, 255, 255, .028));
+      border-color: rgba(255, 122, 69, .22);
+    }
+    .channel-ava-fallback { background: rgba(255, 122, 69, .16); border-color: rgba(255, 122, 69, .26); }
+
+    /* --- chat --- */
+    #arthur {
+      background:
+        radial-gradient(80% 50% at 90% -6%, rgba(255, 122, 69, .18), transparent 62%),
+        linear-gradient(180deg, #0b0a0c, var(--bg));
+    }
+    .chat-head { background: rgba(11, 10, 12, .62); }
+    .chat-status { color: var(--ember-2); }
+    .bubble-user {
+      background: linear-gradient(135deg, #8a4022 0%, #e2552a 55%, #ff9a5a 100%);
+      color: #fff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 8px 22px rgba(226, 65, 28, .28);
+    }
+    .bubble-arthur { background: rgba(255, 255, 255, .055); color: var(--fg); }
+    .sugg:active { color: var(--violet-2); }
+    .chat-input:focus-within {
+      border-color: rgba(255, 154, 90, .55);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 0 0 3px rgba(255, 107, 61, .13), 0 12px 30px rgba(0, 0, 0, .35);
+    }
+
+    /* --- splash: эхо-кольца --- */
+    .splash {
+      background:
+        radial-gradient(80% 55% at 20% 0%, rgba(255, 107, 61, .26), transparent 62%),
+        radial-gradient(70% 50% at 90% 100%, rgba(255, 211, 122, .16), transparent 60%),
+        #060607;
+    }
+    .splash-glow {
+      background: radial-gradient(circle, rgba(255, 107, 61, .26), transparent 62%);
+    }
+    .splash-glow::before,
+    .splash-glow::after {
+      content: "";
+      position: absolute;
+      inset: 12%;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 122, 69, .30);
+      animation: echoRing 3.4s ease-out infinite;
+      pointer-events: none;
+    }
+    .splash-glow::after { animation-delay: 1.7s; }
+    @keyframes echoRing {
+      0% { transform: scale(.55); opacity: .55; }
+      100% { transform: scale(1.32); opacity: 0; }
+    }
+    .splash-word { font-size: 35px; }
+    .splash-word .grad {
+      background: linear-gradient(100deg, #ffd9b8, #fff 42%, #ff9a5a 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+    }
+    .splash-tag { color: rgba(255, 211, 122, .55); }
+    .splash-loader { bottom: calc(96px + var(--safe-bottom)); }
+    .splash-loader i { background: linear-gradient(90deg, transparent, var(--ember-2), var(--gold), transparent); }
+    .splash-status {
+      position: absolute;
+      bottom: calc(66px + var(--safe-bottom));
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .45);
+      z-index: 3;
+      min-height: 14px;
+    }
+    .splash-retry {
+      position: absolute;
+      bottom: calc(24px + var(--safe-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      padding: 12px 20px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 154, 90, .30);
+      color: var(--fg);
+      font-size: 12px;
+      font-weight: 600;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .splash-retry:active { transform: translateX(-50%) scale(.96); }
+    .owner-badge {
+      color: var(--violet-2);
+      background: rgba(255, 122, 69, .10);
+      border-color: rgba(255, 122, 69, .30);
+    }
+
+    /* --- offline banner --- */
+    .net-banner {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: calc(6px + var(--safe-top)) 12px 0;
+      padding: 9px 12px;
+      border-radius: 14px;
+      background: rgba(255, 122, 69, .10);
+      border: 1px solid rgba(255, 122, 69, .28);
+      color: #ffd9c7;
+      font-size: 11.5px;
+      line-height: 1.35;
+      z-index: 6;
+      animation: netIn .3s var(--ease) both;
+    }
+    @keyframes netIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+    .net-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--ember-2);
+      box-shadow: 0 0 0 3px rgba(255, 154, 90, .12), 0 0 10px rgba(255, 122, 69, .8);
+    }
+    .net-text { flex: 1; min-width: 0; }
+    .net-banner button {
+      flex-shrink: 0;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--ink);
+      background: linear-gradient(135deg, #ffd9b8, #ff9a5a);
+    }
+
+    /* --- gate --- */
+    .sub-gate {
+      background:
+        radial-gradient(80% 55% at 50% 0%, rgba(255, 107, 61, .20), transparent 62%),
+        #070708;
+    }
+    .sub-gate .gate-icon {
+      background: linear-gradient(150deg, rgba(255, 122, 69, .28), rgba(255, 211, 122, .12));
+      border-color: rgba(255, 122, 69, .32);
+      box-shadow: 0 18px 44px rgba(226, 65, 28, .28);
+    }
+    .sub-gate h2 { font-family: var(--display); font-size: 22px; letter-spacing: -.04em; }
+    .sub-gate .copy-user { border-color: rgba(255, 122, 69, .26); }
+
+    /* --- cabinet accents --- */
+    .cab-hero-foot { border-top-color: rgba(26, 9, 4, .18); }
+    .cab-chip { color: var(--ink); background: rgba(255, 255, 255, .22); border-color: rgba(255, 255, 255, .34); }
+    .cab-metric.pro { --c: var(--teal); }
+    .cab-metric.life { --c: var(--gold); }
+    .cab-metric.trial { --c: var(--ember-2); }
+    .cab-person .amt { color: var(--teal); }
+    .cab-add {
+      border-color: rgba(255, 122, 69, .38);
+      background: rgba(255, 122, 69, .07);
+    }
+    .cab-add .ico { color: var(--violet-2); background: rgba(255, 122, 69, .18); border-color: rgba(255, 122, 69, .32); }
+    .cab-ref { background: rgba(0, 0, 0, .38); }
+    .cab-badge.trial { color: #ffd9c7; background: rgba(255, 122, 69, .14); border-color: rgba(255, 122, 69, .28); }
+
+    /* --- sheet / modal --- */
+    .sheet { background: linear-gradient(180deg, #17161a, #100f12); }
+    .sheet-item { background: rgba(255, 255, 255, .04); }
+    .cab-modal { background: linear-gradient(180deg, #1a191d, #111014); }
+    .cab-modal input:focus { border-color: rgba(255, 154, 90, .6); }
+    .cab-disable { color: #ffd9c7; background: rgba(255, 107, 61, .09); border-color: rgba(255, 107, 61, .22); }
+
+    /* --- accessibility --- */
+    :focus-visible {
+      outline: 2px solid rgba(255, 154, 90, .85);
+      outline-offset: 2px;
+      border-radius: 10px;
+    }
+    button:focus:not(:focus-visible), a:focus:not(:focus-visible) { outline: none; }
+    @media (prefers-contrast: more) {
+      .text-muted { color: #c8c1b7; }
+      .text-faint { color: #a49d92; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: .01ms !important;
@@ -1507,9 +1909,9 @@
           <svg class="splash-mark" viewBox="0 0 64 64" aria-hidden="true">
             <defs>
               <linearGradient id="auroraMark" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#e9ebef"/>
-                <stop offset="0.5" stop-color="#b0b6c0"/>
-                <stop offset="1" stop-color="#767c86"/>
+                <stop offset="0" stop-color="#ffe3c4"/>
+                <stop offset="0.5" stop-color="#ff9a5a"/>
+                <stop offset="1" stop-color="#e2411c"/>
               </linearGradient>
             </defs>
             <rect class="bar" x="8" y="30" width="13" height="28" rx="4" fill="url(#auroraMark)"/>
@@ -1521,6 +1923,13 @@
           <div class="owner-badge hidden" id="ownerBadge">OWNER</div>
         </div>
         <div class="splash-loader" aria-hidden="true"><i></i></div>
+        <div class="splash-status" id="splashStatus" aria-live="polite">Подключаюсь…</div>
+        <button type="button" class="splash-retry hidden" id="splashRetry">Продолжить без сервера</button>
+      </div>
+      <div class="net-banner hidden" id="netBanner" role="status">
+        <span class="net-dot" aria-hidden="true"></span>
+        <span class="net-text" id="netBannerText">Нет связи с сервером</span>
+        <button type="button" id="netRetry">Повторить</button>
       </div>
       <main class="scroll" id="main"></main>
       <nav class="dock" id="dock" aria-label="Разделы"></nav>
@@ -1538,9 +1947,26 @@
     </div>
   </div>
 
+  <!-- Telegram SDK грузим асинхронно: если telegram.org недоступен, приложение всё равно отрисуется. -->
+  <script async id="tgSdk" src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
 
-const API_BASE = 'https://echo-planner-y4io.onrender.com';
+/* API: на своём домене — same-origin. На GitHub Pages / file:// — отдельный Render-хост.
+   Можно переопределить: ?api=https://host или window.ECHO_API_BASE перед скриптом. */
+const API_BASE = (() => {
+  try {
+    const q = new URLSearchParams(location.search).get('api');
+    if (q) return q.replace(/\/+$/, '');
+    if (window.ECHO_API_BASE) return String(window.ECHO_API_BASE).replace(/\/+$/, '');
+    const host = location.hostname;
+    if (location.protocol === 'file:' || /(^|\.)github\.io$/i.test(host)) {
+      return 'https://echo-planner-y4io.onrender.com';
+    }
+    return '';
+  } catch (e) {
+    return 'https://echo-planner-y4io.onrender.com';
+  }
+})();
 let subInfo = { active: false, ok: false, reason: 'no_plan', type: null, until: null };
 let roleInfo = { role: 'user', is_owner: false, is_traffer: false, traffer_code: null };
 let channelPromo = { show: false, url: 'https://t.me/EchoPlanner_Channel', username: 'EchoPlanner_Channel' };
@@ -1640,6 +2066,19 @@ function hideGate() {
 }
 
 
+function mergeById(localArr, remoteArr) {
+  const out = Array.isArray(localArr) ? localArr.slice() : [];
+  const idx = new Map();
+  out.forEach((x, i) => { if (x && x.id != null) idx.set(String(x.id), i); });
+  for (const r of remoteArr) {
+    if (!r || r.id == null) { out.push(r); continue; }
+    const key = String(r.id);
+    if (idx.has(key)) out[idx.get(key)] = { ...out[idx.get(key)], ...r };
+    else { idx.set(key, out.length); out.push(r); }
+  }
+  return out;
+}
+
 function mapServerToState(data) {
   if (!data || typeof data !== "object") return;
   const safeIso = (v) => {
@@ -1665,18 +2104,18 @@ function mapServerToState(data) {
 
   const fin = data.finance;
   if (Array.isArray(fin)) {
-    state.expenses = fin.map((x, i) => ({
+    state.expenses = mergeById(state.expenses, fin.map((x, i) => ({
       id: x.id || ("srv_f_" + i),
       title: x.description || x.title || "Расход",
       amount: Number(x.amount) || 0,
       category: x.category || "other",
       date: safeIso(x.date || x.created_at),
       time: safeTime(x.time || x.created_at),
-    }));
+    })));
   }
   const cal = data.calendar;
   if (Array.isArray(cal)) {
-    state.meetings = cal.map((x, i) => {
+    state.meetings = mergeById(state.meetings, cal.map((x, i) => {
       const dt = x.datetime || x.date || "";
       return {
         id: x.id || ("srv_m_" + i),
@@ -1687,22 +2126,22 @@ function mapServerToState(data) {
         description: x.description || "",
         place: x.place || "",
       };
-    });
+    }));
   }
   const tasks = data.tasks;
   if (Array.isArray(tasks)) {
-    state.tasks = tasks.map((x, i) => ({
+    state.tasks = mergeById(state.tasks, tasks.map((x, i) => ({
       id: x.id || ("srv_t_" + i),
       title: x.title || "Задача",
       done: !!x.done,
       due: x.due || null,
       time: x.time || null,
       createdAt: x.created_at || x.createdAt || new Date().toISOString(),
-    }));
+    })));
   }
   const nut = data.nutrition;
   if (Array.isArray(nut)) {
-    state.meals = nut.map((x, i) => ({
+    state.meals = mergeById(state.meals, nut.map((x, i) => ({
       id: x.id || ("srv_n_" + i),
       title: x.title || x.products || "Еда",
       calories: Number(x.calories) || 0,
@@ -1711,15 +2150,15 @@ function mapServerToState(data) {
       carbs: Number(x.carbs) || 0,
       meal: x.meal || "snack",
       date: safeIso(x.date || x.created_at),
-    }));
+    })));
   }
   const notes = data.notes;
   if (Array.isArray(notes)) {
-    state.notes = notes.map((x, i) => ({
+    state.notes = mergeById(state.notes, notes.map((x, i) => ({
       id: x.id || ("srv_nt_" + i),
       body: x.body || x.title || "",
       createdAt: x.created_at || x.createdAt || new Date().toISOString(),
-    }));
+    })));
   }
   if (data.shortcut_token) state.shortcutToken = data.shortcut_token;
   if (data.role) {
@@ -1776,6 +2215,26 @@ function channelCardHTML() {
   </a>`;
 }
 
+const SUB_CACHE_KEY = 'echo-sub-cache-v1';
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+function cachedSub(){
+  try { return JSON.parse(localStorage.getItem(SUB_CACHE_KEY) || 'null'); } catch (e) { return null; }
+}
+function cacheSub(sub){
+  try { localStorage.setItem(SUB_CACHE_KEY, JSON.stringify({ ...sub, _cachedAt: Date.now() })); } catch (e) {}
+}
+
+async function fetchWithTimeout(url, opts = {}, ms = 12000){
+  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timer = ctrl ? setTimeout(() => ctrl.abort(), ms) : null;
+  try {
+    return await fetch(url, { ...opts, signal: ctrl ? ctrl.signal : undefined });
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
 async function fetchSubscription() {
   const tg = window.Telegram?.WebApp;
   const initData = tg?.initData || '';
@@ -1783,55 +2242,54 @@ async function fetchSubscription() {
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
       return { active: true, ok: true, type: 'dev', reason: null };
     }
-    // Вне Telegram — пускаем в UI (иначе серый экран при открытии в браузере)
+    // Вне Telegram пускаем в UI как preview, чтобы не было мёртвого экрана.
     return { active: true, ok: true, type: 'preview', reason: null };
   }
-  // Render free может просыпаться до минуты: ждём до 60с и пробуем дважды
-  let res = null;
+
   let lastErr = null;
   for (let attempt = 0; attempt < 2; attempt++) {
-    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    const timer = ctrl ? setTimeout(() => ctrl.abort(), 60000) : null;
     try {
-      try {
-        await fetch(API_BASE + '/api/ping', { method: 'GET', mode: 'cors', cache: 'no-store', signal: ctrl?.signal });
-      } catch (_) {}
-      res = await fetch(API_BASE + '/api/me', {
+      const res = await fetchWithTimeout(API_BASE + '/api/me', {
         method: 'GET',
         mode: 'cors',
         cache: 'no-store',
-        signal: ctrl?.signal,
         headers: {
           'X-Telegram-Init-Data': initData,
           'Accept': 'application/json',
         },
-      });
-      break;
+      }, attempt === 0 ? 12000 : 10000);
+
+      if (res.status === 401) {
+        return { active: false, ok: false, reason: 'no_plan', authError: true };
+      }
+      if (!res.ok) {
+        lastErr = new Error('HTTP ' + res.status);
+        if (res.status >= 500 && attempt === 0) { await sleep(1200); continue; }
+        return { active: false, ok: false, serverError: true, http: res.status };
+      }
+      const data = await res.json();
+      try { mapServerToState(data); } catch (e) { console.error('mapServerToState', e); }
+      const sub = data.subscription || { active: false, ok: false, reason: 'no_plan' };
+      cacheSub(sub);
+      return sub;
     } catch (e) {
       lastErr = e;
-      if (attempt === 0) await new Promise(r => setTimeout(r, 2000));
-    } finally {
-      if (timer) clearTimeout(timer);
+      if (attempt === 0) await sleep(1400);
     }
   }
-  if (!res) {
-    console.error('fetchSubscription', lastErr);
-    return { active: false, ok: false, serverError: true, err: String((lastErr && lastErr.message) || lastErr) };
-  }
-  try {
-    if (res.status === 401) {
-      return { active: false, ok: false, reason: 'no_plan', authError: true };
-    }
-    if (!res.ok) {
-      return { active: false, ok: false, serverError: true, http: res.status };
-    }
-    const data = await res.json();
-    try { mapServerToState(data); } catch (e) { console.error('mapServerToState', e); }
-    return data.subscription || { active: false, ok: false, reason: 'no_plan' };
-  } catch (e) {
-    console.error('fetchSubscription', e);
-    return { active: false, ok: false, serverError: true, err: String(e && e.message || e) };
-  }
+
+  console.error('fetchSubscription', lastErr);
+  const cache = cachedSub();
+  return {
+    active: !!(cache && cache.active),
+    ok: !!(cache && cache.ok),
+    type: (cache && cache.type) || null,
+    until: (cache && cache.until) || null,
+    reason: (cache && cache.reason) || null,
+    offline: true,
+    serverError: true,
+    err: String((lastErr && lastErr.message) || lastErr),
+  };
 }
 
 const KEY = 'echo-planner-v5';
@@ -1950,8 +2408,8 @@ let state={..._loaded, tab:'digest', arthurOpen:false, moreOpen:false, paywallOp
 
 function markSVG(size=28, inverted=false){
   const g=inverted
-    ? '<stop offset="0" stop-color="#f2f3f5"/><stop offset=".5" stop-color="#c9ced7"/><stop offset="1" stop-color="#858b94"/>'
-    : '<stop offset="0" stop-color="#e2e5ea"/><stop offset=".5" stop-color="#a2a8b2"/><stop offset="1" stop-color="#6a6f78"/>';
+    ? '<stop offset="0" stop-color="#fff3e6"/><stop offset=".5" stop-color="#ffc08a"/><stop offset="1" stop-color="#ff7a45"/>'
+    : '<stop offset="0" stop-color="#ffd9b8"/><stop offset=".5" stop-color="#ff9a5a"/><stop offset="1" stop-color="#e2411c"/>';
   const id='g'+Math.random().toString(36).slice(2,7);
   return `<svg viewBox="0 0 64 64" width="${size}" height="${size}" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">${g}</linearGradient></defs>
     <rect x="6" y="32" width="14" height="26" rx="4" fill="url(#${id})"/>
@@ -2350,12 +2808,12 @@ function renderTasks(){
           <svg width="112" height="112" viewBox="0 0 120 120">
             <defs>
               <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#e6e9ee"/><stop offset="1" stop-color="#8d939d"/>
+                <stop offset="0" stop-color="#ffd9b8"/><stop offset="1" stop-color="#ff6b3d"/>
               </linearGradient>
             </defs>
             <circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="8"/>
             <circle cx="60" cy="60" r="${R}" fill="none" stroke="url(#ringGrad)" stroke-width="8" stroke-linecap="round"
-              stroke-dasharray="${dash} ${CIRC-dash}" style="filter:drop-shadow(0 0 6px rgba(203, 209, 220, .55))"/>
+              stroke-dasharray="${dash} ${CIRC-dash}" style="filter:drop-shadow(0 0 6px rgba(255, 107, 61, .45))"/>
           </svg>
           <div class="ring-center"><div>
             <div class="num" style="font-size:25px;font-weight:600;letter-spacing:-.03em">${pct}%</div>
@@ -2799,11 +3257,11 @@ function renderFood(){
         <div class="donut-wrap" style="width:120px;height:120px">
           <svg width="120" height="120" viewBox="0 0 120 120">
             <circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="11"/>
-            <circle cx="60" cy="60" r="${R}" fill="none" stroke="#e4e7ec" stroke-width="11"
+            <circle cx="60" cy="60" r="${R}" fill="none" stroke="#ff9a5a" stroke-width="11"
               stroke-dasharray="${pLen} ${CIRC-pLen}" stroke-dashoffset="0" stroke-linecap="butt"/>
-            <circle cx="60" cy="60" r="${R}" fill="none" stroke="#a6acb5" stroke-width="11"
+            <circle cx="60" cy="60" r="${R}" fill="none" stroke="#ffd37a" stroke-width="11"
               stroke-dasharray="${fLen} ${CIRC-fLen}" stroke-dashoffset="${-pLen}" stroke-linecap="butt"/>
-            <circle cx="60" cy="60" r="${R}" fill="none" stroke="#666b73" stroke-width="11"
+            <circle cx="60" cy="60" r="${R}" fill="none" stroke="#8fe3c0" stroke-width="11"
               stroke-dasharray="${cLen} ${CIRC-cLen}" stroke-dashoffset="${-(pLen+fLen)}" stroke-linecap="butt"/>
           </svg>
           <div class="donut-center">
@@ -2815,15 +3273,15 @@ function renderFood(){
         </div>
         <div class="flex-1 space-y-2">
           <div class="flex justify-between items-center text-sm">
-            <span class="flex items-center gap-2"><span style="width:8px;height:8px;border-radius:50%;background:#e4e7ec"></span> Белки</span>
+            <span class="flex items-center gap-2"><span style="width:8px;height:8px;border-radius:50%;background:#ff9a5a"></span> Белки</span>
             <span class="num">${Math.round(p)} г <span class="text-muted">${pPct}%</span></span>
           </div>
           <div class="flex justify-between items-center text-sm">
-            <span class="flex items-center gap-2"><span style="width:8px;height:8px;border-radius:50%;background:#a6acb5"></span> Жиры</span>
+            <span class="flex items-center gap-2"><span style="width:8px;height:8px;border-radius:50%;background:#ffd37a"></span> Жиры</span>
             <span class="num">${Math.round(f)} г <span class="text-muted">${fPct}%</span></span>
           </div>
           <div class="flex justify-between items-center text-sm">
-            <span class="flex items-center gap-2"><span style="width:8px;height:8px;border-radius:50%;background:#666b73"></span> Углеводы</span>
+            <span class="flex items-center gap-2"><span style="width:8px;height:8px;border-radius:50%;background:#8fe3c0"></span> Углеводы</span>
             <span class="num">${Math.round(c)} г <span class="text-muted">${cPct}%</span></span>
           </div>
           <div class="text-2xs text-faint mt-2">Рекомендуемое соотношение<br/>30% · 20% · 50%</div>
@@ -2840,11 +3298,18 @@ function bindFood(){
 }
 
 /* ========== SETTINGS ========== */
+function subStatusLabel(){
+  if (subInfo.offline) return 'Нет связи · локальный режим';
+  if (subInfo.preview || subInfo.type === 'preview' || subInfo.type === 'dev') return 'Предпросмотр';
+  if (!subInfo.ok) return 'Нет активной подписки';
+  const name = subInfo.type === 'lifetime' ? 'Навсегда' : subInfo.type === 'trial' ? 'Пробный период' : 'Pro';
+  return name + (subInfo.until ? ' · до ' + subInfo.until : '');
+}
 function renderSettings(){
   return `<div class="page">
     ${backHead('Настройки','эхо','settings')}
     <div class="steel p-4 mb-4 flex items-center gap-3">
-      <div style="width:48px;height:48px;display:grid;place-items:center;border-radius:16px;background:linear-gradient(140deg,#26282d,#5e636c 55%,#aab0b9);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 8px 22px rgba(0,0,0,.4)">${markSVG(28,true)}</div>
+      <div style="width:48px;height:48px;display:grid;place-items:center;border-radius:16px;background:linear-gradient(145deg,#2a1a12,#8a4022 45%,#ffb184);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 8px 22px rgba(226,65,28,.4)">${markSVG(28,true)}</div>
       <div>
         <div class="text-lg font-semibold">${state.displayName||'ECHO'}</div>
         <div class="text-2xs text-muted">${state.plan==='forever'?'Тариф «Навсегда»':state.plan==='pro'?'Тариф Pro':'Базовый доступ'}</div>
@@ -2864,7 +3329,7 @@ function renderSettings(){
     </label>
     <div class="card p-4 mb-3">
       <div class="kicker">Подписка</div>
-      <div class="mt-2 text-sm font-semibold" id="subStatusLine">${subInfo.ok ? (subInfo.type === 'lifetime' ? 'Навсегда' : subInfo.type === 'trial' ? 'Пробный период' : 'Pro') + (subInfo.until ? ' · до ' + subInfo.until : '') : 'Нет доступа'}</div>
+      <div class="mt-2 text-sm font-semibold" id="subStatusLine">${subStatusLabel()}</div>
     </div>
     ${channelPromo.show ? `<a class="channel-card pressable mb-3" href="${channelPromo.url}" target="_blank" rel="noopener">
       <img class="channel-ava" src="channel.png" alt="" onerror="this.style.display='none'"/>
@@ -3611,79 +4076,203 @@ function fullRender(){
   try { renderCabinet(); } catch(e) { console.error(e); }
 }
 
-try{
-  const tg=window.Telegram?.WebApp;
-  if(tg){ tg.ready(); tg.expand();
-    try { tg.setHeaderColor('#08090b'); tg.setBackgroundColor('#08090b'); } catch(e) {}
-    try { tg.setBottomBarColor?.('#08090b'); } catch(e) {}
-    if(tg.initDataUnsafe?.user?.first_name) state.displayName=tg.initDataUnsafe.user.first_name;
+let __booted = false;
+
+function splashStatus(text){
+  const el = document.getElementById('splashStatus');
+  if (el && typeof text === 'string') el.textContent = text;
+}
+function splashDone(){
+  const s = document.getElementById('splash');
+  if (!s) return;
+  s.classList.add('out');
+  setTimeout(() => { try { s.classList.add('hidden'); } catch (e) {} }, 420);
+}
+function showNetBanner(show, text){
+  const b = document.getElementById('netBanner');
+  if (!b) return;
+  b.classList.toggle('hidden', !show);
+  if (text) {
+    const t = document.getElementById('netBannerText');
+    if (t) t.textContent = text;
   }
-}catch{}
+}
+function applyPlanFromSub(){
+  if (subInfo.type === 'lifetime') state.plan = 'forever';
+  else if (subInfo.type === 'monthly') state.plan = 'pro';
+  else if (subInfo.type === 'trial') state.plan = 'trial';
+}
+function renderBootError(err){
+  const main = document.getElementById('main');
+  if (!main) return;
+  main.innerHTML = `<div class="page" style="padding:4px">
+    <div class="card p-5">
+      <div class="kicker">Сбой загрузки</div>
+      <div class="text-lg font-semibold mt-2">Не удалось открыть ECHO</div>
+      <div class="text-sm text-muted mt-2">${escHtml(String((err && err.message) || err || 'Неизвестная ошибка'))}</div>
+      <button type="button" class="steel pressable w-full mt-4 py-3 text-sm" id="bootRetry">Попробовать снова</button>
+      <div class="text-2xs text-faint mt-3">Если не помогает — откройте приложение из бота @Echo_Planner_bot.</div>
+    </div>
+  </div>`;
+  document.getElementById('bootRetry')?.addEventListener('click', () => {
+    try { fullRender(); } catch (e) { console.error(e); }
+  });
+}
 
-document.addEventListener('pointerdown', (e)=>{
-  try {
-    if(e.target.closest('.pressable,[data-tab],[data-more],.check,.cal-cell,.chip,.sugg,.dock-item,.sheet-item,.tile,.avatar-btn,.back-btn')) haptic('light');
-  } catch(err) {}
-}, {passive:true});
-
-setTimeout(async ()=>{
-  const splash = document.getElementById('splash');
-  try { splash?.classList.add('out'); } catch(e) {}
-  setTimeout(()=> { try { splash?.classList.add('hidden'); } catch(e) {} }, 400);
-
-  const tgUser = (() => { try { return window.Telegram?.WebApp?.initDataUnsafe?.user; } catch(e) { return null; } })();
-  const uname = (tgUser?.username || '').toLowerCase();
-  const isOwnerClient = (uname === 'dvvsww');
-
-  try {
-    subInfo = await fetchSubscription();
-  } catch (e) {
-    console.error(e);
-    subInfo = { active: false, ok: false, serverError: true };
-  }
-
-  if (isOwnerClient) {
-    roleInfo = { role: 'owner', is_owner: true, is_traffer: false, traffer_code: null };
-    subInfo = { ...(subInfo||{}), ok: true, active: true, type: subInfo?.type || 'lifetime' };
-    try { document.getElementById('ownerBadge')?.classList.remove('hidden'); } catch(e) {}
-  } else if (roleInfo.is_owner) {
-    try { document.getElementById('ownerBadge')?.classList.remove('hidden'); } catch(e) {}
-  }
+async function bootApp(){
+  if (__booted) return;
+  __booted = true;
+  const started = Date.now();
+  splashStatus('Синхронизация…');
 
   try {
-    // owner всегда внутрь; остальным — проверка подписки
-    if (!isOwnerClient && !roleInfo.is_owner && !subInfo.ok && !subInfo.active) {
+    const tgUser = (() => { try { return window.Telegram?.WebApp?.initDataUnsafe?.user; } catch (e) { return null; } })();
+    const uname = (tgUser?.username || '').toLowerCase();
+    const isOwnerClient = (uname === 'dvvsww');
+
+    try {
+      subInfo = await fetchSubscription();
+    } catch (e) {
+      console.error(e);
+      subInfo = { active: false, ok: false, serverError: true, offline: true };
+    }
+
+    if (isOwnerClient) {
+      roleInfo = { role: 'owner', is_owner: true, is_traffer: false, traffer_code: null };
+      subInfo = { ...(subInfo || {}), ok: true, active: true, type: subInfo?.type || 'lifetime' };
+      try { document.getElementById('ownerBadge')?.classList.remove('hidden'); } catch (e) {}
+    } else if (roleInfo.is_owner) {
+      try { document.getElementById('ownerBadge')?.classList.remove('hidden'); } catch (e) {}
+    }
+
+    // Заглушка только если сервер ЯВНО сказал «нет подписки».
+    // Недоступный сервер не должен превращаться в пустой экран.
+    const blocked =
+      !subInfo.offline &&
+      !subInfo.preview &&
+      !isOwnerClient &&
+      !roleInfo.is_owner &&
+      !subInfo.ok &&
+      !subInfo.active;
+
+    if (blocked) {
       showGate(subInfo);
+    } else {
+      hideGate();
+      if (subInfo.offline) {
+        showNetBanner(true, 'Нет связи с сервером · данные сохраняются на устройстве');
+      } else {
+        showNetBanner(false);
+      }
+      applyPlanFromSub();
+      if (isOwnerClient) state.plan = 'forever';
+
+      ['expenses','meetings','tasks','meals','notes','chat'].forEach(k => {
+        if (!Array.isArray(state[k])) state[k] = [];
+      });
+      if (!state.calorieGoal) state.calorieGoal = 2000;
+      if (state.budget == null || isNaN(state.budget)) state.budget = 0;
+
+      try {
+        fullRender();
+      } catch (e) {
+        console.error('boot UI', e);
+        renderBootError(e);
+        try { renderDock(); } catch (e2) {}
+      }
+    }
+  } catch (e) {
+    console.error('boot', e);
+    renderBootError(e);
+  } finally {
+    const elapsed = Date.now() - started;
+    if (elapsed < 900) await sleep(900 - elapsed);
+    splashStatus('');
+    splashDone();
+  }
+}
+
+async function retryConnection(){
+  const b = document.getElementById('netBanner');
+  b?.classList.remove('hidden');
+  const t = document.getElementById('netBannerText');
+  if (t) t.textContent = 'Переподключаюсь…';
+  try {
+    const sub = await fetchSubscription();
+    subInfo = sub || subInfo;
+    if (subInfo.offline) {
+      if (t) t.textContent = 'Нет связи с сервером · данные сохраняются на устройстве';
       return;
     }
+    showNetBanner(false);
     hideGate();
-    if (subInfo.type === 'lifetime') state.plan = 'forever';
-    else if (subInfo.type === 'monthly') state.plan = 'pro';
-    else if (subInfo.type === 'trial') state.plan = 'trial';
-    if (isOwnerClient) state.plan = 'forever';
-
-    // гарантируем массивы перед отрисовкой
-    ['expenses','meetings','tasks','meals','notes','chat'].forEach(k => {
-      if (!Array.isArray(state[k])) state[k] = [];
-    });
-    if (!state.calorieGoal) state.calorieGoal = 2000;
-    if (state.budget == null || isNaN(state.budget)) state.budget = 0;
-
+    applyPlanFromSub();
     fullRender();
+    haptic('success');
   } catch (e) {
-    console.error('boot UI', e);
-    hideGate();
-    const main = document.getElementById('main');
-    if (main) {
-      main.innerHTML = '<div class="page" style="padding:24px"><div class="card p-4"><div class="text-lg font-semibold">Сбой загрузки</div><div class="text-sm text-muted mt-2">'+String(e&&e.message||e)+'</div><button type="button" class="steel pressable w-full mt-4 py-3 text-sm" id="forceDigest">Открыть DIGEST</button></div></div>';
-      document.getElementById('forceDigest')?.addEventListener('click', () => {
-        state.tab = 'digest';
-        try { fullRender(); } catch(err) { console.error(err); }
-      });
-    }
-    try { renderDock(); } catch(e2) {}
+    console.error('retry', e);
+    if (t) t.textContent = 'Нет связи с сервером · попробуйте ещё раз';
   }
-}, 1600);
+}
+
+document.getElementById('netRetry')?.addEventListener('click', retryConnection);
+
+// «Продолжить без сервера» — если Render долго не отвечает, не держим пользователя в сплэше.
+document.getElementById('splashRetry')?.addEventListener('click', () => {
+  subInfo = { ...(subInfo || {}), offline: true, serverError: true };
+  splashDone();
+  if (!document.getElementById('main')?.innerHTML.trim()) {
+    try { fullRender(); } catch (e) { renderBootError(e); }
+  }
+  showNetBanner(true, 'Нет связи с сервером · данные сохраняются на устройстве');
+});
+
+// Показываем кнопку выхода из сплэша, если сервер молчит дольше 9 секунд.
+setTimeout(() => {
+  const s = document.getElementById('splash');
+  if (!s || s.classList.contains('hidden')) return;
+  document.getElementById('splashRetry')?.classList.remove('hidden');
+  splashStatus('Сервер отвечает дольше обычного…');
+}, 9000);
+
+function initTelegram(){
+  try {
+    const tg = window.Telegram?.WebApp;
+    if (!tg) return false;
+    tg.ready(); tg.expand();
+    try { tg.setHeaderColor('#08080a'); tg.setBackgroundColor('#08080a'); } catch (e) {}
+    try { tg.setBottomBarColor?.('#08080a'); } catch (e) {}
+    if (tg.initDataUnsafe?.user?.first_name) state.displayName = tg.initDataUnsafe.user.first_name;
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+document.addEventListener('pointerdown', (e) => {
+  try {
+    if (e.target.closest('.pressable,[data-tab],[data-more],.check,.cal-cell,.chip,.sugg,.dock-item,.sheet-item,.tile,.avatar-btn,.back-btn')) haptic('light');
+  } catch (err) {}
+}, { passive: true });
+
+// Не ждём telegram.org бесконечно: максимум 2.5 c, потом стартуем в preview-режиме.
+async function waitForTelegram(ms){
+  if (window.Telegram?.WebApp) return true;
+  const tag = document.getElementById('tgSdk');
+  if (!tag) return false;
+  return await new Promise((resolve) => {
+    const done = (v) => { clearTimeout(timer); resolve(v); };
+    const timer = setTimeout(() => done(false), ms);
+    tag.addEventListener('load', () => done(true), { once: true });
+    tag.addEventListener('error', () => done(false), { once: true });
+  });
+}
+
+(async () => {
+  await waitForTelegram(2500);
+  initTelegram();
+  bootApp();
+})();
 </script>
 </body>
 </html>

@@ -17,10 +17,20 @@ from .config import DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL
 
 logger = logging.getLogger("echo.ai")
 
-client = AsyncOpenAI(
-    api_key=DEEPSEEK_API_KEY or "missing",
-    base_url=DEEPSEEK_BASE_URL,
-)
+_client = None
+
+
+def get_client() -> AsyncOpenAI:
+    """Ленивая инициализация: импорт модуля не должен падать из-за env или версий httpx."""
+    global _client
+    if _client is None:
+        if not DEEPSEEK_API_KEY:
+            raise RuntimeError("DEEPSEEK_API_KEY is not set")
+        _client = AsyncOpenAI(
+            api_key=DEEPSEEK_API_KEY,
+            base_url=DEEPSEEK_BASE_URL,
+        )
+    return _client
 
 # Дешёвая/быстрая модель на AI Tunnel (при необходимости смени в env)
 CHAT_MODEL = "deepseek-chat"
@@ -186,7 +196,7 @@ async def structure_note(text: str) -> dict:
     now = datetime.utcnow().strftime("%Y-%m-%d %H:%M")
     raw_assistant = ""
     try:
-        resp = await client.chat.completions.create(
+        resp = await get_client().chat.completions.create(
             model=CHAT_MODEL,
             messages=[
                 {"role": "system", "content": STRUCTURE_PROMPT.format(today=today, now=now)},
@@ -280,7 +290,7 @@ async def arthur_reply(user_id: int, question: str, user_data: dict) -> str:
         {"role": "user", "content": question},
     ]
     try:
-        resp = await client.chat.completions.create(
+        resp = await get_client().chat.completions.create(
             model=CHAT_MODEL,
             messages=messages,
             temperature=0.35,

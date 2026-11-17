@@ -1,0 +1,30 @@
+# Blueprint для Render: один Web Service = бот (webhook) + API + мини-апп.
+# Секреты (sync: false) задаются в дашборде Render и не попадают в репозиторий.
+services:
+  - type: web
+    name: echo-planner
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: BOT_POLLING_MODE
+        value: "0"
+      - key: BOT_TOKEN
+        sync: false
+      - key: WEBAPP_URL
+        sync: false
+      - key: DATABASE_URL
+        # Supabase: Connect → Session pooler (порт 5432), user вида postgres.<project-ref>
+        sync: false
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: PAYMENT_PROVIDER_TOKEN
+        sync: false
+      - key: WEBHOOK_SECRET
+        sync: false
+      - key: OWNER_USERNAME
+        value: dvvsww
